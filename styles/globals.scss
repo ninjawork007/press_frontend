@@ -1,0 +1,321 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600;700&display=swap');
+@import "utils";
+@import "_variables";
+$bg-white: #F8F7FC;
+
+@font-face {
+  font-family: "Butler";
+  src: url("/fonts/Butler_Medium.otf");
+  font-style: normal;
+  font-weight: 400;
+}
+
+
+html {
+  background-color: $bg-white;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  font-family: "Source Sans Pro", sans-serif;
+  scroll-behavior: smooth;
+
+}
+
+body {
+  --primary-font: /* Primary font */
+  --secondary-font: /* Secondary font */
+}
+
+p,
+li,
+div,
+a {
+  font-family: var(--secondary-font), 'Source Sans Pro', sans-serif;
+  // font-weight: normal;
+}
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--primary-font), "Butler", sans-serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+
+/**
+ * Tooltip Styles
+ */
+
+/* Add this attribute to the element that needs a tooltip */
+[data-tooltip] {
+  position: relative;
+  z-index: 2;
+  cursor: pointer;
+}
+
+/* Hide the tooltip content by default */
+[data-tooltip]:before,
+[data-tooltip]:after {
+  visibility: hidden;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+  filter: "progid: DXImageTransform.Microsoft.Alpha(Opacity=0)";
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Position tooltip above the element */
+[data-tooltip]:before {
+  position: absolute;
+  bottom: 150%;
+  left: 50%;
+  margin-bottom: 5px;
+  margin-left: -80px;
+  padding: 7px;
+  width: 160px;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+  background-color: #000;
+  background-color: hsla(0, 0%, 20%, 0.9);
+  color: #fff;
+  content: attr(data-tooltip);
+  text-align: center;
+  font-size: 14px;
+  line-height: 1.2;
+}
+
+/* Triangle hack to make tooltip look like a speech bubble */
+[data-tooltip]:after {
+  position: absolute;
+  bottom: 150%;
+  left: 50%;
+  margin-left: -5px;
+  width: 0;
+  border-top: 5px solid #000;
+  border-top: 5px solid hsla(0, 0%, 20%, 0.9);
+  border-right: 5px solid transparent;
+  border-left: 5px solid transparent;
+  content: " ";
+  font-size: 0;
+  line-height: 0;
+}
+
+/* Show tooltip content on hover */
+[data-tooltip]:hover:before,
+[data-tooltip]:hover:after {
+  visibility: visible;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+  filter: "progid: DXImageTransform.Microsoft.Alpha(Opacity=100)";
+  opacity: 1;
+}
+
+.blue-gradient {
+  background: radial-gradient(177.39% 93.31% at 95.41% 6.69%, rgba(248, 247, 252, 0) 64.35%, #F8F7FC 81.82%), radial-gradient(79.11% 88.96% at 83.43% 0%, #150198 0%, #544BFD 59.86%, #5249FE 81.77%, #352BFD 100%);
+  // filter: blur(128px);
+  backdrop-filter: blur(128px);
+  -webkit-backdrop-filter: blur(128px);
+}
+
+.white-gradient {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0) 100%);
+  backdrop-filter: blur(8px);
+}
+
+.primary-radial-gradient {
+  /* Primary Radial Gradient / 100 */
+
+  background: radial-gradient(87.76% 189.57% at 87.76% 0%, #E681BF 0%, #544BFD 68.75%, #5249FE 81.77%, #352BFD 100%);
+}
+
+.blue-radial-gradient {
+  background: radial-gradient(177.39% 93.31% at 95.41% 6.69%, rgba(248, 247, 252, 0) 64.35%, #F8F7FC 81.82%), radial-gradient(79.11% 88.96% at 83.43% 0%, #150198 0%, #544BFD 59.86%, #5249FE 81.77%, #352BFD 100%);
+}
+
+.benefit-card {
+  @apply p-6 sm:p-10 space-y-2 bg-white rounded-3xl;
+  // background: linear-gradient(180deg, #FFFFFF 0%, rgba(255, 255, 255, 0) 100%);
+  background: white;
+}
+
+/* Custom properties */
+:root {
+  --tooltip-text-color: black;
+  --tooltip-background-color: white;
+  --tooltip-margin: 30px;
+  --tooltip-arrow-size: 6px;
+}
+
+/* Wrapping */
+.Tooltip-Wrapper {
+  display: inline-block;
+  position: relative;
+}
+
+/* Absolute positioning */
+.Tooltip-Tip {
+  overflow: visible;
+  position: absolute;
+  border-radius: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 110%;
+  padding: 12px;
+  color: var(--tooltip-text-color);
+  background: var(--tooltip-background-color);
+  box-shadow: 0px 12px 16px -4px rgba(16, 24, 40, 0.08), 0px 4px 6px -2px rgba(16, 24, 40, 0.03);
+  border: 1px solid #AEBBFE;
+
+  font-size: 14px;
+  font-family: sans-serif;
+  line-height: 1;
+  z-index: 100;
+  white-space: normal;
+  width: 150px;
+}
+
+/* CSS border triangles */
+.Tooltip-Tip::before {
+  content: " ";
+  left: 50%;
+  border: solid transparent;
+  height: 0;
+  width: 0;
+  position: absolute;
+  pointer-events: none;
+  border-width: var(--tooltip-arrow-size);
+  margin-left: calc(var(--tooltip-arrow-size) * -1);
+}
+
+/* Absolute positioning */
+.Tooltip-Tip.top {
+  // top: calc(var(--tooltip-margin) * -1);
+}
+/* CSS border triangles */
+.Tooltip-Tip.top::before {
+  top: 100%;
+  border-top-color: var(--tooltip-background-color);
+}
+
+/* Absolute positioning */
+.Tooltip-Tip.right {
+  left: calc(100% + var(--tooltip-margin));
+  top: 50%;
+  transform: translateX(0) translateY(-50%);
+}
+/* CSS border triangles */
+.Tooltip-Tip.right::before {
+  left: calc(var(--tooltip-arrow-size) * -1);
+  top: 50%;
+  transform: translateX(0) translateY(-50%);
+  border-right-color: var(--tooltip-background-color);
+}
+
+/* Absolute positioning */
+.Tooltip-Tip.bottom {
+  bottom: calc(var(--tooltip-margin) * -1);
+}
+/* CSS border triangles */
+.Tooltip-Tip.bottom::before {
+  bottom: 100%;
+  border-bottom-color: var(--tooltip-background-color);
+}
+
+/* Absolute positioning */
+.Tooltip-Tip.left {
+  left: auto;
+  right: calc(100% + var(--tooltip-margin));
+  top: 50%;
+  transform: translateX(0) translateY(-50%);
+}
+/* CSS border triangles */
+.Tooltip-Tip.left::before {
+  left: auto;
+  right: calc(var(--tooltip-arrow-size) * -2);
+  top: 50%;
+  transform: translateX(0) translateY(-50%);
+  border-left-color: var(--tooltip-background-color);
+}
+
+
+/* FAQ SLIDESHOW - START */
+
+#review-slides {
+
+}
+
+/* #FAQs SLIDESHOW - START */
+#review-slides {
+  .review-slide {
+    width: 100%;
+    height: 100%;
+    max-width: 800px;
+    background-color: rgba(43, 43, 43, 0.75);
+    backdrop-filter: blur(104px);
+    -webkit-backdrop-filter: blur(104px);
+
+    flex: 0 0 auto;
+    position: absolute;
+    height: 100%;
+
+    overflow: hidden;
+    will-change: transform;
+
+    &:not(.prev):not(.next):not(.active) {
+      z-index: -1;
+      transform: translate3d(200%, 0, 0);
+      opacity: 0;
+    }
+
+    &.prev {
+      z-index: 0;
+      transform: translate3d(-100%, 0, 0);
+      transition: 1s $easing;
+      opacity: 0;
+    }
+
+    &.active {
+      z-index: 10;
+      transform: translate3d(0, 0, 0);
+      transition: transform 1s $easing;
+      opacity: 1;
+    }
+
+    &.next {
+      z-index: 5;
+      transform: translate3d(100%, 0, 0);
+      transition: 1s $easing;
+      opacity: 0.2;
+      margin-left: 2%;
+    }
+
+    @at-root #faq-wrapper.prev & {
+      &:not(.prev):not(.next):not(.active) {
+        transform: translate3d(-200%, 0, 0);
+      }
+
+      &.prev {
+        transform: translate3d(100%, 0, 0);
+        z-index: 5;
+      }
+
+      &.next {
+        transform: translate3d(-100%, 0, 0);
+        z-index: 15;
+      }
+
+      &.transition {
+        z-index: 5;
+      }
+    }
+  }
+}
+
+/* FAQ SLIDESHOW - END */
