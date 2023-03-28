@@ -2,7 +2,7 @@ import { SearchIcon } from "@heroicons/react/outline";
 
 import classNames from "classnames";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 
 import PublicationsSort from "./publications-sort";
 import ViewOptions from "./view-options";
@@ -13,6 +13,8 @@ import ScrollableTabs from "../scrollableTabs";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { BarLoader, MoonLoader } from "react-spinners";
 import { Switch } from "@headlessui/react";
+import CartContext from "@/components/CartContext";
+
 // const tabs = [
 //   { name: "All Outlets", query: null, current: false },
 //   { name: "Lifestyle", query: ["lifestyle"], current: false },
@@ -35,10 +37,7 @@ import { Switch } from "@headlessui/react";
 
 export default function PressList({
   publications,
-  canViewPricing,
   paginationData,
-  handleAddItem,
-  handleRemoveItem,
   nextPage,
   prevPage,
   handleSearch,
@@ -49,7 +48,6 @@ export default function PressList({
   handlePublicationInquiryOpen,
   isWhitelabelOwner,
   handlePriceEdit,
-  handleFeaturedUpdate,
   categories,
   handleToggleCategory,
   site_categories,
@@ -69,7 +67,12 @@ export default function PressList({
   tabs.unshift({ name: "All Outlets", query: null, current: false });
   const [category, setCategory] = useState(tabs[0]);
   const [isCategoryEnabled, setIsCategoryEnabled] = useState(false);
-
+  const {
+    handleAddItem,
+    handleRemoveItem,
+    canViewPricing,
+    handleFeaturedUpdate,
+  } = useContext(CartContext);
   const [viewOptions, setViewOptions] = useState({
     showDoFollow: isWhitelabelOwner,
     showImageRequirement: false,

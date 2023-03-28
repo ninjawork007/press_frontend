@@ -1,9 +1,8 @@
 import { getSession, useSession, signIn, signOut } from "next-auth/react";
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useContext } from "react";
 import Cart from "@/components/cart";
 import PressList from "@/components/publications/pressList";
 import API from "@/lib/api";
-import UnlockPricingModal from "@/components/publications/unlockPricingModal";
 import { ShoppingCartIcon } from "@heroicons/react/outline";
 import PublicationDetailModal from "@/components/publications/publication-detail-modal";
 import PublicationDetailsModal from "@/components/publications/publicationDetailsModal";
@@ -14,6 +13,9 @@ import * as klaviyo from "@/lib/tracking/klaviyo";
 import { useRouter } from "next/router";
 import HowItWorks from "@/components/howItWorks";
 import FAQs from "@/components/faqs";
+import PublicationModel from "@/lib/models/publication-model";
+import CartContext from "@/components/CartContext";
+import SmallPublicationCard from "@/components/smallPublicationCard";
 
 const IndexPage = ({ siteData }) => {
   const [openCart, setOpenCart] = useState(false);
@@ -28,10 +30,7 @@ const IndexPage = ({ siteData }) => {
   const [isAddToCartModalOpen, setAddToCartModalOpen] = useState(false);
   const [highlightedPublication, setHighlightedPublication] = useState(null);
   const [isInquiryOpen, setInquiryOpen] = useState(false);
-  const [canViewPricing, setCanViewPricing] = useState(false);
   const router = useRouter();
-
-  const [list, updateList] = useState([]);
   const [filters, setFilters] = useState({
     publicationFilters: {},
     searchQuery: null,
@@ -41,58 +40,31 @@ const IndexPage = ({ siteData }) => {
   const [isLoadingPublications, setIsLoadingPublications] = useState(false);
   const { data: session } = useSession();
   const filtersRef = useRef();
-  const listLengthRef = useRef();
+  // const listLengthRef = useRef();
 
-  const [openAccessPricingModal, setOpenAccessPricingModal] = useState(false);
+  // useEffect(() => {
+  //   if (list.length > 0) {
+  //     let obj = JSON.stringify(list);
+  //     window.localStorage.setItem("list", obj);
+  //     window.dispatchEvent(new Event("storage"));
+  //   } else {
+  //     checkLocalStorage();
+  //   }
+  // }, [list]);
 
-  useEffect(() => {
-    if (session) {
-      setCanViewPricing(true);
-      return;
-    }
-    if (localStorage.getItem("allow_pricing_access") === "true") {
-      setCanViewPricing(true);
-      return;
-    }
-
-    //check if query has allow access to pricing and if so, set state to allow access
-    const queryString = require("query-string");
-    const parsed = queryString.parse(location.search);
-    const allow_pricing_access = parsed.allow_pricing_access;
-    //if no query param, check if local storage has access
-
-    if (allow_pricing_access) {
-      setCanViewPricing(true);
-
-      localStorage.setItem("allow_pricing_access", true);
-
-      router.replace("/publications");
-    }
-  }, [session]);
-
-  const handleAddItem = (item) => {
-    if (!canViewPricing || !session) {
-      setOpenAccessPricingModal(true);
-      return;
-    }
-    const idx = list.findIndex((listItem) => listItem.id === item.id);
-
-    if (idx === -1) {
-      updateList((list) => [...list, { ...item, quantity: 1 }]);
-    } else {
-      let newList = [...list];
-      newList[idx] = { ...newList[idx], quantity: newList[idx].quantity + 1 };
-
-      updateList((list) => [...newList]);
-    }
-
-    setDetailOpen(false);
-    setOpenCart(true);
-  };
-
-  const handleRemoveItem = (selectedItem) => {
-    updateList(list.filter((item) => item.id !== selectedItem.id));
-  };
+  // const checkLocalStorage = () => {
+  //   if (localStorage.getItem("list")) {
+  //     let items = JSON.parse(localStorage.getItem("list") + "");
+  //     items.forEach((element, idx, array) => {
+  //       let sitePublication = new PublicationModel(element);
+  //       const returnedTarget = Object.assign(sitePublication, element);
+  //       items[idx] = returnedTarget;
+  //       if (idx === items.length - 1) {
+  //         updateList((list) => [...items]);
+  //       }
+  //     });
+  //   }
+  // };
 
   const nextPage = () => {
     pageNumberRef.current += 1;
@@ -175,22 +147,22 @@ const IndexPage = ({ siteData }) => {
     filtersRef.current = filters;
   }, [filters, siteData]);
 
-  useEffect(() => {
-    if (list.length > 0) {
-      if (siteData?.attributes?.klaviyo_public_key && session?.profile?.email) {
-        if (list.length > listLengthRef.current) {
-          klaviyo.trackAddToCart({
-            itemName: list[list.length - 1].name,
-            itemPrice: list[list.length - 1].price,
-            itemQuantity: 1,
-            items: list,
-            email: session?.profile?.email,
-          });
-        }
-      }
-    }
-    listLengthRef.current = list.length;
-  }, [list, session]);
+  // useEffect(() => {
+  //   if (list.length > 0) {
+  //     if (siteData?.attributes?.klaviyo_public_key && session?.profile?.email) {
+  //       if (list.length > listLengthRef.current) {
+  //         klaviyo.trackAddToCart({
+  //           itemName: list[list.length - 1].name,
+  //           itemPrice: list[list.length - 1].price,
+  //           itemQuantity: 1,
+  //           items: list,
+  //           email: session?.profile?.email,
+  //         });
+  //       }
+  //     }
+  //   }
+  //   listLengthRef.current = list.length;
+  // }, [list, session]);
 
   const fetchPublications = async () => {
     console.log("fetching publications");
@@ -263,25 +235,11 @@ const IndexPage = ({ siteData }) => {
 
   return (
     <SiteWrapper siteData={siteData}>
-      <UnlockPricingModal
-        canViewPricing={canViewPricing}
-        open={openAccessPricingModal}
-        setOpen={() => setOpenAccessPricingModal(false)}
-        isInternalSite={siteData?.attributes?.is_internal}
-      />
-      <Cart
-        open={openCart}
-        setOpen={setOpenCart}
-        list={list}
-        handleRemoveItem={handleRemoveItem}
-        site_id={siteData?.id}
-      />
       <section className="flex justify-center relative pt-16" id="about">
         <div className="container mx-auto h-full flex-col px-6 max-w-7xl">
           <div className="flex flex-col sm:flex-row justify-between items-start">
             <h1 className="text-left text-5xl">Our Publications</h1>
-
-            {!!session && (
+            {/* {!!session && (
               <a
                 onClick={() => setOpenCart(!openCart)}
                 className="inline-flex justify-center rounded-full border border-gray-300 shadow-sm px-6 py-4 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500 flex-none gap-2"
@@ -291,7 +249,7 @@ const IndexPage = ({ siteData }) => {
                   <p className="text-white">{list.length}</p>
                 </div>
               </a>
-            )}
+            )} */}
           </div>
           {/* 
           <p className="text-left text-base mt-4">
@@ -305,28 +263,13 @@ const IndexPage = ({ siteData }) => {
               <div className="flex overflow-scroll sm:overflow-visible sm:grid grid-cols-4 gap-4 mt-4">
                 {featuredPublications.map((publication, publicationIndex) => {
                   return (
-                    <div
+                    <SmallPublicationCard
+                      handlePublicationDetailsOpen={
+                        handlePublicationDetailsOpen
+                      }
+                      publication={publication}
                       key={publicationIndex}
-                      onClick={() => handlePublicationDetailsOpen(publication)}
-                      className="bg-white rounded-[32px] px-6 py-4 flex-none max-w-[310px] cursor-pointer hover:text-indigo-500 text-gray-600 hover:border-indigo-300 border border-transparent flex items-center overflow-visible"
-                    >
-                      <div className="flex flex-col gap-1 items-start justify-center w-full">
-                        <img
-                          className="h-[32px] flex-none object-contain"
-                          src={publication.wordLogo?.attributes?.url}
-                        />
-                        <div className="flex justify-between w-full">
-                          <p className="text-base font-normal">
-                            {publication?.name}
-                          </p>
-                          {canViewPricing && (
-                            <p className="text-base font-bold">
-                              {publication?.getFormattedPrice()}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                    </div>
+                    />
                   );
                 })}
               </div>
@@ -339,12 +282,10 @@ const IndexPage = ({ siteData }) => {
           <PressList
             publications={publications}
             paginationData={paginationData}
-            handleAddItem={handleAddItem}
             nextPage={nextPage}
             prevPage={prevPage}
             handleSearch={handleSearch}
             handleCategory={handleCategory}
-            canViewPricing={canViewPricing}
             handleSort={handleSort}
             isLoadingPublications={isLoadingPublications}
             handleRequirementsOpen={handlePublicationDetailsOpen}
@@ -370,9 +311,7 @@ const IndexPage = ({ siteData }) => {
           setIsOpen={setDetailOpen}
           isOpen={isDetailOpen}
           publication={highlightedPublication}
-          canViewPricing={!!session}
           canViewDoFollowAndSponsored={session?.profile?.can_view_secret_data}
-          handleAddToCart={() => handleAddItem(highlightedPublication)}
           handlePublicationInquiryOpen={handlePublicationInquiryOpen}
         />
       )}

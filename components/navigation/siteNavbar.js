@@ -7,6 +7,7 @@ import {
   XIcon,
   MenuIcon,
   LockClosedIcon,
+  ShoppingCartIcon,
 } from "@heroicons/react/outline";
 import Link from "next/link";
 import { useSession, signIn, signOut } from "next-auth/react";
@@ -19,6 +20,8 @@ export default function SiteNavBar({
   name,
   isCheckout,
   handlePublicationInquiryOpen,
+  handleOpenCart,
+  items,
   isInternalSite,
 }) {
   const { data: session } = useSession();
@@ -139,7 +142,7 @@ export default function SiteNavBar({
                           </a>
                           <Menu as="div" className="relative ml-3">
                             <div>
-                              <Menu.Button className="flex rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 p-2 items-center">
+                              <Menu.Button className="inline-flex justify-center rounded-full border border-gray-300 shadow-sm px-4 py-4 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500 flex-none gap-2">
                                 <span className="sr-only">Open user menu</span>
                                 <UserIcon
                                   className="h-6 w-6 text-gray-600"
@@ -218,6 +221,17 @@ export default function SiteNavBar({
                               </Menu.Items>
                             </Transition>
                           </Menu>
+                          {!!session && (
+                            <a
+                              onClick={() => handleOpenCart()}
+                              className="inline-flex justify-center rounded-full border border-gray-300 shadow-sm px-6 py-4 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500 flex-none gap-2"
+                            >
+                              <ShoppingCartIcon className="w-6 h-6" />
+                              <div className="rounded-full bg-gray-600 w-6 h-6 flex items-center justify-center">
+                                <p className="text-white">{items.length}</p>
+                              </div>
+                            </a>
+                          )}
                         </>
                       ) : (
                         <>
@@ -274,26 +288,18 @@ export default function SiteNavBar({
                     </div>
 
                     <div className="-mr-2 gap-4 flex items-center sm:hidden">
-                      {/* Mobile menu button */}
-                      <Link href={isInternalSite ? "/start" : "/register"}>
-                        <a className="button !py-4 !px-6 h-[56px]">
-                          <span>Get Started</span>
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            strokeWidth="1.5"
-                            stroke="currentColor"
-                            className="w-5 h-5 ml-2"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25"
-                            />
-                          </svg>
+                      {!!session && (
+                        <a
+                          onClick={() => handleOpenCart()}
+                          className="inline-flex justify-center rounded-full border border-gray-300 shadow-sm px-6 py-4 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500 flex-none gap-2"
+                        >
+                          <ShoppingCartIcon className="w-6 h-6" />
+                          <div className="rounded-full bg-gray-600 w-6 h-6 flex items-center justify-center">
+                            <p className="text-white">{items.length}</p>
+                          </div>
                         </a>
-                      </Link>
+                      )}
+                      {/* Mobile menu button */}
                       <Disclosure.Button className="inline-flex items-center justify-center rounded-full border border-gray-200 p-3 text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:outline-none">
                         <span className="sr-only">Open main menu</span>
                         {open ? (

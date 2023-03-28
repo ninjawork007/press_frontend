@@ -14,6 +14,11 @@ import Script from "next/script";
 import { getSession, useSession, signIn, signOut } from "next-auth/react";
 import Intercom from "../lib/intercom";
 import classNames from "classnames";
+import Cart from "@/components/cart";
+import PublicationModel from "@/lib/models/publication-model";
+import CartContext from "@/components/CartContext";
+import UnlockPricingModal from "@/components/publications/unlockPricingModal";
+
 export default function SiteWrapper({
   children,
   siteData,
@@ -25,6 +30,111 @@ export default function SiteWrapper({
   const { data: session } = useSession();
   const [isKlaviyoLoaded, setIsKlaviyoLoaded] = useState(false);
   const [isInquiryOpen, setInquiryOpen] = useState(false);
+  const [list, updateList] = useState([]);
+  const [openCart, setOpenCart] = useState(false);
+  const [canViewPricing, setCanViewPricing] = useState(false);
+  const [openAccessPricingModal, setOpenAccessPricingModal] = useState(false);
+  const listLengthRef = useRef();
+
+  useEffect(() => {
+    if (list.length == 0) {
+      checkLocalStorage();
+    }
+  }, [list]);
+
+  useEffect(() => {
+    if (list.length > 0) {
+      if (siteData?.attributes?.klaviyo_public_key && session?.profile?.email) {
+        if (list.length > listLengthRef.current) {
+          klaviyo.trackAddToCart({
+            itemName: list[list.length - 1].name,
+            itemPrice: list[list.length - 1].price,
+            itemQuantity: 1,
+            items: list,
+            email: session?.profile?.email,
+          });
+        }
+      }
+    }
+    listLengthRef.current = list.length;
+  }, [list, session]);
+
+  useEffect(() => {
+    if (session) {
+      setCanViewPricing(true);
+      return;
+    }
+    if (localStorage.getItem("allow_pricing_access") === "true") {
+      setCanViewPricing(true);
+      return;
+    }
+
+    //check if query has allow access to pricing and if so, set state to allow access
+    const queryString = require("query-string");
+    const parsed = queryString.parse(location.search);
+    const allow_pricing_access = parsed.allow_pricing_access;
+    //if no query param, check if local storage has access
+
+    if (allow_pricing_access) {
+      setCanViewPricing(true);
+
+      localStorage.setItem("allow_pricing_access", true);
+
+      router.replace("/publications");
+    }
+  }, [session]);
+
+  const handleAddItem = (item) => {
+    if (!canViewPricing || !session) {
+      setOpenAccessPricingModal(true);
+      return;
+    }
+
+    const idx = list.findIndex((listItem) => listItem.id === item.id);
+
+    if (idx === -1) {
+      const newList = [...list, { ...item, quantity: 1 }];
+      updateList((list) => newList);
+      localStorage.setItem("list", JSON.stringify(newList));
+    } else {
+      let newList = [...list];
+      newList[idx] = { ...newList[idx], quantity: newList[idx].quantity + 1 };
+      localStorage.setItem("list", JSON.stringify(newList));
+
+      updateList((list) => [...newList]);
+    }
+
+    // setDetailOpen(false);
+    setOpenCart(true);
+  };
+
+  const handleRemoveItem = (selectedItem) => {
+    let newList = list.filter((item) => item.id !== selectedItem.id);
+    let obj = JSON.stringify(newList);
+    localStorage.setItem("list", obj);
+    updateList(newList);
+  };
+
+  const checkLocalStorage = () => {
+    if (localStorage.getItem("list")) {
+      let items = JSON.parse(localStorage.getItem("list") + "");
+      items.forEach((element, idx, array) => {
+        let sitePublication = new PublicationModel(element);
+        const returnedTarget = Object.assign(sitePublication, element);
+        items[idx] = returnedTarget;
+        if (idx === items.length - 1) {
+          updateList((list) => [...items]);
+        }
+      });
+    }
+  };
+
+  // const handleRemoveItem = (selectedItem) => {
+  //   let newList = list.filter((item) => item.id !== selectedItem.id);
+  //   let obj = JSON.stringify(newList);
+  //   localStorage.setItem("list", obj);
+  //   updateList(newList);
+  // };
 
   // console.log('Site Data', siteData);
   let primaryFont = siteData?.attributes.primary_font;
@@ -111,6 +221,10 @@ export default function SiteWrapper({
     setInquiryOpen(true);
   };
 
+  const handleOpenCart = () => {
+    setOpenCart(!openCart);
+  };
+
   return (
     <>
       <Head>
@@ -164,25 +278,45 @@ export default function SiteWrapper({
           site_name: siteData?.attributes.name,
         }}
       />
+      <CartContext.Provider
+        value={{ list, handleAddItem, handleRemoveItem, canViewPricing }}
+      >
+        <UnlockPricingModal
+          canViewPricing={canViewPricing}
+          open={openAccessPricingModal}
+          setOpen={() => setOpenAccessPricingModal(false)}
+          isInternalSite={siteData?.attributes?.is_internal}
+        />
 
-      <Navbar
-        isTransparent={isTransparent}
-        logo={siteData?.attributes.logo}
-        name={siteData?.attributes.name}
-        isCheckout={isCheckout}
-        handlePublicationInquiryOpen={handlePublicationInquiryOpen}
-        isInternalSite={siteData?.attributes.is_internal}
-      />
+        <Cart
+          open={openCart}
+          setOpen={setOpenCart}
+          list={list}
+          handleRemoveItem={handleRemoveItem}
+          site_id={siteData?.id}
+        />
 
-      <div className={classNames(!isTransparent && "pt-[80px] sm:pt-20")}>
-        {children}
-      </div>
-      {!isCheckout && (
-        <Footer
+        <Navbar
+          isTransparent={isTransparent}
           logo={siteData?.attributes.logo}
           name={siteData?.attributes.name}
+          isCheckout={isCheckout}
+          items={list}
+          handleOpenCart={handleOpenCart}
+          handlePublicationInquiryOpen={handlePublicationInquiryOpen}
+          isInternalSite={siteData?.attributes.is_internal}
         />
-      )}
+
+        <div className={classNames(!isTransparent && "pt-[80px] sm:pt-20")}>
+          {children}
+        </div>
+        {!isCheckout && (
+          <Footer
+            logo={siteData?.attributes.logo}
+            name={siteData?.attributes.name}
+          />
+        )}
+      </CartContext.Provider>
 
       <TalkToSalesModal
         site_id={siteData?.id}

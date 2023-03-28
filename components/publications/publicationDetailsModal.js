@@ -1,5 +1,5 @@
 /* This example requires Tailwind CSS v2.0+ */
-import { Fragment, useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState, useContext } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import {
   ExclamationIcon,
@@ -19,17 +19,23 @@ import {
 import Tooltip from "../tooltip";
 import StatusLabel from "../statusLabel";
 import classNames from "classnames";
+import CartContext from "@/components/CartContext";
+
 export default function PublicationDetailsModal({
   setIsOpen,
   isOpen,
   publication,
-  handleAddToCart,
   handlePublicationInquiryOpen,
   canViewPricing,
   canViewDoFollowAndSponsored,
 }) {
   const cancelButtonRef = useRef(null);
+  const { handleAddItem } = useContext(CartContext);
 
+  const handleAddToCart = () => {
+    handleAddItem(publication);
+    setIsOpen(false);
+  };
   return (
     <Transition.Root show={isOpen} as={Fragment}>
       <Dialog as="div" className="relative z-10" onClose={setIsOpen}>

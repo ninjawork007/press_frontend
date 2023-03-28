@@ -11,6 +11,8 @@ import Tooltip from "@/components/tooltip";
 import MoonLoader from "react-spinners/MoonLoader";
 import Modal from "@/components/modal";
 import { CSVLink } from "react-csv";
+import CartContext from "@/components/CartContext";
+
 const IndexPage = ({ site, publication_categories }) => {
   const [siteData, setSiteData] = useState(site);
 
@@ -315,125 +317,131 @@ const IndexPage = ({ site, publication_categories }) => {
 
   return (
     <>
-      <UnlockPricingModal
-        open={openAccessPricingModal}
-        setOpen={() => setOpenAccessPricingModal(false)}
-      />
-      <Navbar name="Press Backend" isManager={true} />
-      <section
-        className="flex justify-center relative pt-16 sm:pt-32 "
-        id="about"
+      <CartContext.Provider
+        value={{
+          handleAddItem: handleItem,
+          handleRemoveItem: handleItem,
+          canViewPricing,
+          handleFeaturedUpdate: handleItem,
+        }}
       >
-        <div className="container mx-auto h-full flex-col px-6 max-w-7xl">
-          <div className="flex flex-col sm:flex-row justify-between items-start">
-            <h1 className="text-left text-5xl">Manage Publications</h1>
-          </div>
-
-          <p className="text-left text-base mt-4">
-            Add or remove publications on your site
-          </p>
-        </div>
-      </section>
-      {isSaving && (
-        <div className="fixed bottom-0 p-4 r-0">
-          <span className="flex items-center float-right shadow-xl font-bold  justify-center gap-1 text-green-500 bg-white rounded-full w-[100px]">
-            Saving <MoonLoader size={16} loading={isSaving} color={"green"} />{" "}
-          </span>
-        </div>
-      )}
-      <section className="flex justify-center relative" id="about">
-        <div className="container mx-auto px-6 max-w-7xl">
-          <div className="mt-2">
-            {csvData.data.length > 0 ? (
-              <CSVLink
-                data={csvData.data}
-                headers={csvData.headers}
-                className="button"
-              >
-                Download CSV
-              </CSVLink>
-            ) : (
-              <button
-                className="items-center flex gap-2 text-lg text-indigo-500"
-                onClick={() => handleCSVExport()}
-              >
-                Export{" "}
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className="w-5 h-5"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"
-                  />
-                </svg>
-              </button>
-            )}
-          </div>
-
-          <PressList
-            publications={publications}
-            paginationData={paginationData}
-            handleAddItem={handleItem}
-            handleRemoveItem={handleItem}
-            nextPage={nextPage}
-            prevPage={prevPage}
-            handleSearch={handleSearch}
-            handleCategory={handleCategory}
-            canViewPricing={canViewPricing}
-            handleSort={handleSort}
-            isLoadingPublications={isLoadingPublications}
-            handleRequirementsOpen={handlePublicationDetailsOpen}
-            isWhitelabelOwner={true}
-            handlePriceEdit={handlePriceEdit}
-            handleFeaturedUpdate={handleItem}
-            categories={publication_categories}
-            handleFilter={handleFilter}
-            site_categories={
-              siteData?.attributes?.site_publication_categories?.data
-            }
-            handleToggleCategory={handleToggleCategory}
-          />
-        </div>
-      </section>
-
-      <Modal isOpen={isEditingPrice} onClose={setIsEditingPrice}>
-        <div className="flex flex-col items-center justify-center p-5 w-96">
-          <h1 className="text-2xl font-bold">{selectedPublication?.name}</h1>
-          <form>
-            <div className="flex flex-col gap-2 my-4">
-              <label htmlFor="name">Publication Price</label>
-              <input
-                type="number"
-                defaultValue={selectedPublication?.price || 0}
-                ref={priceInputRef}
-              />
-              <p>
-                Your cost is $
-                <span className="font-bold">
-                  {selectedPublication?.resellerPrice}
-                </span>
-              </p>
-              <button
-                className="button"
-                disabled={isSaving}
-                onClick={handlePriceSubmit}
-              >
-                Save
-              </button>
+        <UnlockPricingModal
+          open={openAccessPricingModal}
+          setOpen={() => setOpenAccessPricingModal(false)}
+        />
+        <Navbar name="Press Backend" isManager={true} />
+        <section
+          className="flex justify-center relative pt-16 sm:pt-32 "
+          id="about"
+        >
+          <div className="container mx-auto h-full flex-col px-6 max-w-7xl">
+            <div className="flex flex-col sm:flex-row justify-between items-start">
+              <h1 className="text-left text-5xl">Manage Publications</h1>
             </div>
-          </form>
-        </div>
-      </Modal>
 
-      {/* <HowItWorks/>
+            <p className="text-left text-base mt-4">
+              Add or remove publications on your site
+            </p>
+          </div>
+        </section>
+        {isSaving && (
+          <div className="fixed bottom-0 p-4 r-0">
+            <span className="flex items-center float-right shadow-xl font-bold  justify-center gap-1 text-green-500 bg-white rounded-full w-[100px]">
+              Saving <MoonLoader size={16} loading={isSaving} color={"green"} />{" "}
+            </span>
+          </div>
+        )}
+        <section className="flex justify-center relative" id="about">
+          <div className="container mx-auto px-6 max-w-7xl">
+            <div className="mt-2">
+              {csvData.data.length > 0 ? (
+                <CSVLink
+                  data={csvData.data}
+                  headers={csvData.headers}
+                  className="button"
+                >
+                  Download CSV
+                </CSVLink>
+              ) : (
+                <button
+                  className="items-center flex gap-2 text-lg text-indigo-500"
+                  onClick={() => handleCSVExport()}
+                >
+                  Export{" "}
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className="w-5 h-5"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"
+                    />
+                  </svg>
+                </button>
+              )}
+            </div>
+
+            <PressList
+              publications={publications}
+              paginationData={paginationData}
+              nextPage={nextPage}
+              prevPage={prevPage}
+              handleSearch={handleSearch}
+              handleCategory={handleCategory}
+              canViewPricing={canViewPricing}
+              handleSort={handleSort}
+              isLoadingPublications={isLoadingPublications}
+              handleRequirementsOpen={handlePublicationDetailsOpen}
+              isWhitelabelOwner={true}
+              handlePriceEdit={handlePriceEdit}
+              categories={publication_categories}
+              handleFilter={handleFilter}
+              site_categories={
+                siteData?.attributes?.site_publication_categories?.data
+              }
+              handleToggleCategory={handleToggleCategory}
+            />
+          </div>
+        </section>
+
+        <Modal isOpen={isEditingPrice} onClose={setIsEditingPrice}>
+          <div className="flex flex-col items-center justify-center p-5 w-96">
+            <h1 className="text-2xl font-bold">{selectedPublication?.name}</h1>
+            <form>
+              <div className="flex flex-col gap-2 my-4">
+                <label htmlFor="name">Publication Price</label>
+                <input
+                  type="number"
+                  defaultValue={selectedPublication?.price || 0}
+                  ref={priceInputRef}
+                />
+                <p>
+                  Your cost is $
+                  <span className="font-bold">
+                    {selectedPublication?.resellerPrice}
+                  </span>
+                </p>
+                <button
+                  className="button"
+                  disabled={isSaving}
+                  onClick={handlePriceSubmit}
+                >
+                  Save
+                </button>
+              </div>
+            </form>
+          </div>
+        </Modal>
+
+        {/* <HowItWorks/>
       <FAQs/>
       <Footer/> */}
+      </CartContext.Provider>
     </>
   );
 };

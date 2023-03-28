@@ -29,6 +29,11 @@ function OrderConfirmation({ siteData }) {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
+    //clear list from local storage
+    localStorage.removeItem("list");
+  }, []);
+
+  useEffect(() => {
     const order_id = router.query.order_id;
     // if (!order_id) {
     //   // redirect to dashboard if no order id
