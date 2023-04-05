@@ -1,15 +1,7 @@
-import Navbar from "@/components/navbar";
 import {
   DocumentTextIcon,
-  UploadIcon,
-  TrashIcon,
-  ClockIcon,
-  ExclamationCircleIcon,
   ArrowNarrowLeftIcon,
-  DownloadIcon,
-  CheckCircleIcon,
   PlusIcon,
-  ZoomInIcon,
 } from "@heroicons/react/outline";
 import { getSession, useSession, signIn, signOut } from "next-auth/react";
 import { useState, useEffect, useRef } from "react";
@@ -17,36 +9,26 @@ import RevisionModal from "@/components/revisionModal";
 import CompleteModal from "@/components/completeModal";
 import moment from "moment";
 import ApprovalModal from "@/components/approvalModal";
-import BarLoader from "react-spinners/BarLoader";
-import MoonLoader from "react-spinners/MoonLoader";
 import API from "@/lib/api";
 import { useRouter } from "next/router";
-import classNames from "classnames";
 import ArticleCard from "@/components/article-card";
 import Link from "next/link";
 import DocViewerModal from "@/components/docViewerModal";
 import DocViewerModalQuestionnaire from "@/components/docViewerModalQuestionnaire";
-import StatusHandler from "@/lib/status-handler";
 import MessageList from "@/components/messageList";
-import StatusLabel from "@/components/statusLabel";
 import CampaignManager from "@/lib/campaignManager";
 import SiteWrapper from "@/components/siteWrapper";
 import AlertMessage from "@/components/alertMessage";
 import AddArticlesOptions from "@/components/campaign/addArticlesOptions";
 import UploadImagesBox from "@/components/article/uploadImagesBox";
-import ImageGallery from "@/components/campaign/imageGallery";
+import ImageGallery from "@/components/imageGallery";
 import Modal from "@/components/modal";
 import CampaignModel from "@/lib/models/campaign-model";
 import DropdownOptions from "@/components/campaign/dropdownOptions";
 
 function MyCampaigns({ initialCampaign, role, siteData }) {
   const router = useRouter();
-  // useEffect(() => {
 
-  //   if (!session) {
-  //     router.replace('/login');
-  //   }
-  // }, [])
   const campaignId = router.query.id;
   const [campaign, setCampaign] = useState(initialCampaign);
 
@@ -81,6 +63,7 @@ function MyCampaigns({ initialCampaign, role, siteData }) {
   const campaignManager = CampaignManager;
 
   useEffect(() => {
+    console.log("campaign", campaign);
     campaign?.articles?.filter((article) => {
       if (article?.status === "requires-action") {
         setHasArticlesForReview(true);
@@ -133,30 +116,6 @@ function MyCampaigns({ initialCampaign, role, siteData }) {
     getMessages();
   }, [session, isManager, campaign]);
 
-  // useEffect(() => {
-  //   if (isManager && campaign?.status === "reviewing") {
-  //     const allArticlesReviewed = articles.every((article) => {
-  //       return (
-  //         article?.status === "requires-action" ||
-  //         article?.status === "publishing" ||
-  //         article?.status === "completed"
-  //       );
-  //     });
-  //     allArticlesReviewed && setAllArticlesReviewed(true);
-  //   } else if (!isManager && campaign?.status === "requires-action") {
-  //     const allArticlesReviewed = articles.every((article) => {
-  //       return (
-  //         article?.status === "reviewing" ||
-  //         article?.status === "publishing" ||
-  //         article?.status === "completed"
-  //       );
-  //     });
-  //     allArticlesReviewed && setAllArticlesReviewed(true);
-  //   } else {
-  //     setAllArticlesReviewed(false);
-  //   }
-  // }, [campaign, isManager]);
-
   useEffect(() => {
     if (selectedArticle.id) {
       API.messages
@@ -170,96 +129,6 @@ function MyCampaigns({ initialCampaign, role, siteData }) {
     }
   }, [selectedArticle, session]);
 
-  // const setCampaignAsPending = () => {
-  //   const updateReviewStatusData = { status: "pending" };
-  //   API.campaigns
-  //     .update(campaignId, updateReviewStatusData, session)
-  //     .then(function (result) {
-  //       return API.campaigns.findOne(campaignId, session);
-  //     })
-  //     .then(function (result) {
-  //       let campaign = new CampaignModel(result.data?.data);
-  //       setCampaign(campaign);
-  //       setIsSubmittingForReview(false);
-  //       return;
-  //     })
-  //     .catch((err) => {
-  //       console.log(err);
-  //       setIsSubmittingForReview(false);
-  //       return;
-  //     });
-  // };
-
-  // const setCampaignAsComplete = () => {
-  //   const updateReviewStatusData = { status: "completed" };
-  //   API.campaigns
-  //     .update(campaignId, updateReviewStatusData, session)
-  //     .then(function (result) {
-  //       return API.campaigns.findOne(campaignId, session);
-  //     })
-  //     .then(function (result) {
-  //       let campaign = new CampaignModel(result.data?.data);
-  //       setCampaign(campaign);
-  //       setIsSubmittingForReview(false);
-  //       return;
-  //     })
-  //     .catch((err) => {
-  //       console.log(err);
-  //       setIsSubmittingForReview(false);
-  //       return;
-  //     });
-  // };
-  // const submitForReview = () => {
-  //   setIsSubmittingForReview(true);
-  //   //check if we can mark campaign as ready for TEAM review
-  //   if (!isManager && campaign?.status !== "reviewing") {
-  //     //check if articles are all reviewing
-
-  //     const updateReviewStatusData = { status: "reviewing" };
-  //     API.campaigns
-  //       .update(campaignId, updateReviewStatusData, session)
-  //       .then(function (result) {
-  //         return API.campaigns.findOne(campaignId, session);
-  //       })
-  //       .then(function (result) {
-  //         let campaign = new CampaignModel(result.data?.data);
-  //         setCampaign(campaign);
-  //         setIsSubmittingForReview(false);
-  //         return;
-  //       })
-  //       .catch((err) => {
-  //         console.log(err);
-  //         setIsSubmittingForReview(false);
-  //         return;
-  //       });
-  //   }
-  //   //check if we can mark campaign as ready for CLIENT review
-  //   if (isManager && campaign?.status !== "requires-action") {
-  //     //check if articles are ready for client review
-
-  //     let reviewCount = campaign?.reviewCount || 0;
-  //     reviewCount++;
-
-  //     const updateReviewStatusData = { status: "requires-action", reviewCount };
-  //     API.campaigns
-  //       .update(campaignId, updateReviewStatusData, session)
-  //       .then(function (result) {
-  //         return API.campaigns.findOne(campaignId, session);
-  //       })
-  //       .then(function (result) {
-  //         let campaign = new CampaignModel(result.data?.data);
-  //         setCampaign(campaign);
-  //         setIsSubmittingForReview(false);
-  //         return;
-  //       })
-  //       .catch((err) => {
-  //         console.log(err);
-  //         setIsSubmittingForReview(false);
-  //         return;
-  //       });
-  //   }
-  // };
-
   const downloadURI = (uri, name) => {
     var link = document.createElement("a");
     link.download = name;
@@ -270,20 +139,11 @@ function MyCampaigns({ initialCampaign, role, siteData }) {
   };
 
   const openApproval = () => {
-    // API.purchasedPublications
-    //   .find({ session, only_show_unused: true })
-    //   .then(function (result) {
-    //     const publications = result.data?.data;
-    //     setPurchasedPublications(publications);
-    //     setIsApproving(true);
-    //   })
-    //   .catch((err) => {
-    //     console.log(err);
-    //   });
     setIsApproving(true);
   };
 
   const uploadImage = async (e) => {
+    console.log("e...", e);
     e.preventDefault();
     const files = e.target.files;
     const formData = new FormData();
@@ -294,6 +154,8 @@ function MyCampaigns({ initialCampaign, role, siteData }) {
     formData.append("refId", campaignId);
     formData.append("field", "images");
     setIsUploadingImage(true);
+
+    debugger;
 
     API.campaigns
       .uploadFiles(formData, session)
@@ -489,8 +351,6 @@ function MyCampaigns({ initialCampaign, role, siteData }) {
       alert("You must agree to the terms and conditions to continue.");
       return;
     }
-    // const publicationId = e.target.publication.value;
-    // approve({ publicationId });
 
     let result = await campaignManager.approveForPublishing({
       article: selectedArticle,
@@ -651,15 +511,6 @@ function MyCampaigns({ initialCampaign, role, siteData }) {
 
   return (
     <SiteWrapper siteData={siteData}>
-      {/*
-        This example requires updating your template:
-
-        ```
-        <html class="h-full bg-gray-50">
-        <body class="h-full">
-        ```
-      */}
-
       <div className="min-h-full py-12 px-4 sm:px-6 lg:px-8 h-full max-w-7xl mx-auto">
         <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center border-b pb-14 border-indigo-100">
           <div>
@@ -724,26 +575,6 @@ function MyCampaigns({ initialCampaign, role, siteData }) {
             <h3 className="text-4xl">Articles</h3>
             {handleArticleStatus()}
 
-            {/* {allArticlesReviewed && (
-              <div className="flex gap-4">
-                <button
-                  className="button w-full"
-                  disabled={isSubmittingForReview}
-                  onClick={() => submitForReview()}
-                >
-                  {isSubmittingForReview ? (
-                    <MoonLoader size={20} color={"#fff"} />
-                  ) : (
-                    <>
-                      {isManager
-                        ? "Submit to Client for Review"
-                        : "Submit Campaign for Review"}
-                    </>
-                  )}
-                </button>
-              </div>
-            )} */}
-
             <div className="">
               <div className="w-full">
                 <div className="space-y-4">
@@ -751,6 +582,7 @@ function MyCampaigns({ initialCampaign, role, siteData }) {
                     <>
                       {articles.map((article, index) => (
                         <ArticleCard
+                          campaignId={campaignId}
                           key={article.id}
                           index={index} //for naming articles with no names
                           article={article}

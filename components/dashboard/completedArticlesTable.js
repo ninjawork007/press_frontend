@@ -165,6 +165,17 @@ export default function PurchasedPublicationsTable({
                       <span>View Campaign</span>
                     </a>
                   </Link>
+                  <Link
+                    href={`/campaigns/${purchasedPublication.article?.campaign?.id}/articles/${purchasedPublication?.article.id}`}
+                  >
+                    <a
+                      href="#"
+                      className="text-indigo-600 hover:text-indigo-900 flex gap-1 items-center font-bold"
+                    >
+                      <DocumentIcon className="h-4 w-4" />
+                      <span>View Article</span>
+                    </a>
+                  </Link>
 
                   {purchasedPublication?.article?.url && (
                     <a

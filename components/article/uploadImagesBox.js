@@ -6,7 +6,11 @@ import { UploadIcon, TrashIcon, DownloadIcon } from "@heroicons/react/outline";
 import CampaignManager from "@/lib/campaignManager";
 import classNames from "classnames";
 
-export default function Example({ campaign, isUploadingImage, uploadImage }) {
+export default function UploadImagesBox({
+  campaign,
+  isUploadingImage,
+  uploadImage,
+}) {
   return (
     <div
       className={classNames(

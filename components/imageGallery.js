@@ -1,6 +1,6 @@
 import { TrashIcon, DownloadIcon } from "@heroicons/react/outline";
 
-export default function ImageGallery({ images, deleteImage }) {
+export default function ImageGallery({ images, deleteImage, isManager }) {
   const downloadURI = (uri, name) => {
     var link = document.createElement("a");
     link.download = name;
@@ -9,6 +9,7 @@ export default function ImageGallery({ images, deleteImage }) {
     link.click();
     document.body.removeChild(link);
   };
+
   return (
     <div className="">
       {images?.length > 0 ? (
@@ -29,13 +30,15 @@ export default function ImageGallery({ images, deleteImage }) {
                 </p>
               </div>
               <div className="flex gap-2 items-center">
-                <button
-                  className="flex-none relative whitespace-nowrap inline-flex items-center justify-center text-gray-500 hover:text-indigo-600 font-bold"
-                  onClick={(e) => deleteImage(e, image.id)}
-                  id={image.id}
-                >
-                  <TrashIcon className="h-6 w-6" aria-hidden="true" />
-                </button>
+                {!isManager && (
+                  <button
+                    className="flex-none relative whitespace-nowrap inline-flex items-center justify-center text-gray-500 hover:text-indigo-600 font-bold"
+                    onClick={(e) => deleteImage(e, image.id)}
+                    id={image.id}
+                  >
+                    <TrashIcon className="h-6 w-6" aria-hidden="true" />
+                  </button>
+                )}
 
                 <button
                   className="flex-none relative whitespace-nowrap inline-flex items-center justify-center text-gray-500 hover:text-indigo-600 font-bold"

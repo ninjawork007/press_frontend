@@ -253,6 +253,7 @@ function Example({ role, site }) {
               >
                 <option>completed</option>
                 <option>pending</option>
+                <option>purchased</option>
               </select>
             </div>
             <ProfileSearch onProfileSelected={onProfileSelected} />

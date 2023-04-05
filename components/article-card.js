@@ -3,11 +3,15 @@ import {
   PencilAltIcon,
   ExternalLinkIcon,
   CheckCircleIcon,
+  GlobeAltIcon,
+  CalendarIcon,
 } from "@heroicons/react/outline";
 import classNames from "classnames";
 import StatusLabel from "./statusLabel";
 import DateHandler from "../lib/date-handler";
 import MoonLoader from "react-spinners/MoonLoader";
+import Link from "next/link";
+import { useEffect } from "react";
 
 export default function ArticleCard({
   article,
@@ -23,6 +27,7 @@ export default function ArticleCard({
   isLoading,
   handleGoogleDocFlow,
   handleWritingFlow,
+  campaignId,
 }) {
   const pressTeamReviewing = (status) => status == "reviewing";
   const requiresClientAction = (status) => status == "requires-action";
@@ -57,8 +62,21 @@ export default function ArticleCard({
     if (draft || article.googleDocUrl) {
       return (
         <div className="flex justify-between items-center mt-4">
+          <Link href={`/campaigns/${campaignId}/articles/${article.id}`}>
+            <a href="#" className="flex flex-row gap-1">
+              <ZoomInIcon className="h-6 w-6" aria-hidden="true" /> View
+            </a>
+          </Link>
           {articleIsPublished(article.status) && (
             <>
+              {/* <button className="relative whitespace-nowrap inline-flex items-center justify-center text-gray-500 hover:text-indigo-600 font-bold gap-1" onClick={() => downloadURI(draft.attributes.article.url, draft.attributes.name)}><DownloadIcon className="h-6 w-6" aria-hidden="true" /> Download</button> */}
+              {/* <button
+                className="relative whitespace-nowrap inline-flex items-center justify-center text-gray-500 hover:text-indigo-600 font-bold gap-1"
+                onClick={openArticleViewer}
+              >
+                <ZoomInIcon className="h-6 w-6" aria-hidden="true" /> View
+              </button> */}
+
               <a href={article.url} target="_blank" rel="noreferrer">
                 <button className="relative whitespace-nowrap inline-flex items-center justify-center text-green-500 hover:text-green-600 font-bold gap-1">
                   <ExternalLinkIcon
@@ -83,12 +101,6 @@ export default function ArticleCard({
             </>
           )}
           {/* <button className="relative whitespace-nowrap inline-flex items-center justify-center text-gray-500 hover:text-indigo-600 font-bold gap-1" onClick={() => downloadURI(draft.attributes.article.url, draft.attributes.name)}><DownloadIcon className="h-6 w-6" aria-hidden="true" /> Download</button> */}
-          <button
-            className="relative whitespace-nowrap inline-flex items-center justify-center text-gray-500 hover:text-indigo-600 font-bold gap-1"
-            onClick={openArticleViewer}
-          >
-            <ZoomInIcon className="h-6 w-6" aria-hidden="true" /> View Draft
-          </button>
 
           {((requiresClientAction(article.status) && !isManager) ||
             (pressTeamReviewing(article.status) && isManager)) && (
@@ -175,6 +187,10 @@ export default function ArticleCard({
       );
     }
   };
+
+  useEffect(() => {
+    // console.log("article...", article);
+  });
 
   return (
     <div
@@ -269,6 +285,28 @@ export default function ArticleCard({
         )}
       </div>
 
+      <div class="flex flex-row gap-4">
+        {article.publishDate && (
+          <p className="text-sm text-gray-600 flex flex-row gap-1 items-center">
+            <GlobeAltIcon className="h-4 w-4" aria-hidden="true" />
+            Published:{" "}
+            <span className="">
+              {DateHandler.formatDateByDay(article.publishDate)}
+            </span>
+          </p>
+        )}
+
+        {article.updatedAt && (
+          <p className="text-sm text-gray-600 flex flex-row gap-1 items-center">
+            <CalendarIcon className="h-4 w-4" aria-hidden="true" />
+            Last Update:{" "}
+            <span className="">
+              {DateHandler.formatDateByDay(article.updatedAt)}
+            </span>
+          </p>
+        )}
+      </div>
+
       {articleIsPublished(article.status) && (
         <>
           <div className="w-full flex items-center">
@@ -289,15 +327,6 @@ export default function ArticleCard({
             </p>
           </div>
         </>
-      )}
-
-      {article.updatedAt && (
-        <p className="text-sm text-gray-600">
-          Last Update:{" "}
-          <span className="">
-            {DateHandler.formatDateByDay(article.updatedAt)}
-          </span>
-        </p>
       )}
 
       <div>

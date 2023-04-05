@@ -4,7 +4,12 @@ import Link from "next/link";
 import StatusLabel from "@/components/statusLabel";
 import StatusHandler from "@/lib/status-handler";
 import CampaignManager from "@/lib/campaignManager";
-import { DocumentIcon, CheckIcon, PlusIcon } from "@heroicons/react/outline";
+import {
+  DocumentTextIcon,
+  DocumentDuplicateIcon,
+  CheckIcon,
+  PlusIcon,
+} from "@heroicons/react/outline";
 import moment from "moment";
 import * as priceFormatter from "@/lib/price-formatter";
 
@@ -175,42 +180,57 @@ export default function PurchasedPublicationsTable({
                     {purchasedPublication.article?.name && (
                       <p>{purchasedPublication.article?.name}</p>
                     )}
-                    <Link
-                      href={`/campaigns/${purchasedPublication.article?.campaign?.id}`}
-                    >
-                      <a
-                        href="#"
-                        className="text-indigo-600 hover:text-indigo-900 flex gap-1 items-center font-bold"
+
+                    <div className="flex gap-2">
+                      <Link
+                        href={`/campaigns/${purchasedPublication.article?.campaign?.id}/articles/${purchasedPublication.article?.id}`}
                       >
-                        <DocumentIcon className="h-4 w-4" />
-                        <span>View Campaign</span>
-                      </a>
-                    </Link>
+                        <a
+                          href="#"
+                          className="text-indigo-600 hover:text-indigo-900 flex gap-1 items-center font-bold"
+                        >
+                          <DocumentTextIcon className="h-4 w-4" />
+                          <span>View Article</span>
+                        </a>
+                      </Link>
+                      <Link
+                        href={`/campaigns/${purchasedPublication.article?.campaign?.id}`}
+                      >
+                        <a
+                          href="#"
+                          className="text-gray-600 hover:text-gray-900 flex gap-1 items-center font-bold"
+                        >
+                          <DocumentDuplicateIcon className="h-4 w-4" />
+                          <span>View Campaign</span>
+                        </a>
+                      </Link>
+
+                      {purchasedPublication?.article?.url && (
+                        <a
+                          href={purchasedPublication?.article?.url}
+                          className="font-bold flex gap-1 items-center cursor-pointer text-green-500 hover:text-green-900"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            strokeWidth={1.5}
+                            stroke="currentColor"
+                            className="w-4 h-4"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"
+                            />
+                          </svg>
+                          View Published
+                        </a>
+                      )}
+                    </div>
                     {purchasedPublication?.article?.campaign
                       ?.hasEnoughImages || (
                       <span className="text-amber-500">Needs more images</span>
-                    )}
-                    {purchasedPublication?.article?.url && (
-                      <a
-                        href={purchasedPublication?.article?.url}
-                        className="font-bold flex gap-1 items-center cursor-pointer text-green-500 hover:text-green-900"
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          strokeWidth={1.5}
-                          stroke="currentColor"
-                          className="w-4 h-4"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"
-                          />
-                        </svg>
-                        View Published
-                      </a>
                     )}
                   </>
                 ) : (

@@ -60,7 +60,7 @@ export default function SiteNavBar({
                       <a className="text-gray-600">
                         {logo?.data?.attributes?.url ? (
                           <img
-                            className="block h-10 sm:h-14 w-auto max-w-[188px]"
+                            className="block w-auto max-w-[188px] max-h-[60px]"
                             src={logo?.data?.attributes?.url}
                             alt="Workflow"
                           />

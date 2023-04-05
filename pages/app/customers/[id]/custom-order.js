@@ -13,6 +13,7 @@ import * as klaviyo from "@/lib/tracking/klaviyo";
 import { useRouter } from "next/router";
 import ProfileModel from "@/lib/models/profile-model";
 import Navbar from "@/components/navbar";
+import CartContext from "@/components/CartContext";
 
 const IndexPage = ({ site, publication_categories, profile }) => {
   const [siteData, setSiteData] = useState(site);
@@ -258,133 +259,145 @@ const IndexPage = ({ site, publication_categories, profile }) => {
 
   return (
     <div>
-      <Navbar name="Press Backend" isManager={true} />
-
-      <UnlockPricingModal
-        canViewPricing={canViewPricing}
-        open={openAccessPricingModal}
-        setOpen={() => setOpenAccessPricingModal(false)}
-      />
-      <Cart
-        open={openCart}
-        setOpen={setOpenCart}
-        list={list}
-        handleRemoveItem={handleRemoveItem}
-        site_id={siteData?.id}
-        site_url={
-          siteData?.attributes?.customDomain || siteData?.attributes?.subdomain
-        }
-        isManager={true}
-        profile_id={profile?.id}
-      />
-      <section
-        className="flex justify-center relative pt-16 sm:pt-32 "
-        id="about"
+      <CartContext.Provider
+        value={{
+          list,
+          handleAddItem,
+          handleRemoveItem,
+          canViewPricing,
+        }}
       >
-        <div className="container mx-auto h-full flex-col px-6 max-w-7xl">
-          <div className="flex flex-col sm:flex-row justify-between items-start">
-            <h1 className="text-left text-5xl">
-              Create Order For {`${profile?.name}`}
-            </h1>
+        <Navbar name="Press Backend" isManager={true} />
 
-            {!!session && (
-              <a
-                onClick={() => setOpen(!openCart)}
-                className="inline-flex justify-center rounded-full border border-gray-300 shadow-sm px-6 py-4 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500 flex-none gap-2"
-              >
-                <ShoppingCartIcon className="w-6 h-6" />
-                <div className="rounded-full bg-gray-600 w-6 h-6 flex items-center justify-center">
-                  <p className="text-white">{list.length}</p>
-                </div>
-              </a>
-            )}
-          </div>
+        <UnlockPricingModal
+          canViewPricing={canViewPricing}
+          open={openAccessPricingModal}
+          setOpen={() => setOpenAccessPricingModal(false)}
+        />
+        <Cart
+          open={openCart}
+          setOpen={setOpenCart}
+          list={list}
+          site_id={siteData?.id}
+          site_url={
+            siteData?.attributes?.customDomain ||
+            siteData?.attributes?.subdomain
+          }
+          isManager={true}
+          profile_id={profile?.id}
+        />
+        <section
+          className="flex justify-center relative pt-16 sm:pt-32 "
+          id="about"
+        >
+          <div className="container mx-auto h-full flex-col px-6 max-w-7xl">
+            <div className="flex flex-col sm:flex-row justify-between items-start">
+              <h1 className="text-left text-5xl">
+                Create Order For {`${profile?.name}`}
+              </h1>
 
-          <p className="text-left text-base mt-4">
-            Add items to the {"customer's"} cart here. (Please note they must
-            have enough credit to cover the order amount)
-          </p>
+              {!!session && (
+                <a
+                  onClick={() => setOpen(!openCart)}
+                  className="inline-flex justify-center rounded-full border border-gray-300 shadow-sm px-6 py-4 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500 flex-none gap-2"
+                >
+                  <ShoppingCartIcon className="w-6 h-6" />
+                  <div className="rounded-full bg-gray-600 w-6 h-6 flex items-center justify-center">
+                    <p className="text-white">{list.length}</p>
+                  </div>
+                </a>
+              )}
+            </div>
 
-          {featuredPublications?.length > 0 && (
-            <div className="flex flex-col mt-8">
-              <h2 className="text-left text-2xl">Featured Publications</h2>
-              <div className="flex overflow-scroll sm:overflow-visible sm:grid grid-cols-4 gap-4 mt-4">
-                {featuredPublications.map((publication, publicationIndex) => {
-                  return (
-                    <div
-                      key={publicationIndex}
-                      onClick={() => handlePublicationDetailsOpen(publication)}
-                      className="bg-white rounded-[32px] px-6 py-4 flex-none max-w-[310px] cursor-pointer hover:text-indigo-500 text-gray-600 hover:border-indigo-300 border border-transparent flex items-center overflow-visible"
-                    >
-                      <div className="flex flex-col gap-1 items-start justify-center w-full">
-                        <img
-                          className="h-[32px] flex-none object-contain"
-                          src={publication.wordLogo?.attributes?.url}
-                        />
-                        <div className="flex justify-between w-full">
-                          <p className="text-base font-normal">
-                            {publication?.name}
-                          </p>
-                          {canViewPricing && (
-                            <p className="text-base font-bold">
-                              {publication?.getFormattedPrice()}
+            <p className="text-left text-base mt-4">
+              Add items to the {"customer's"} cart here. (Please note they must
+              have enough credit to cover the order amount)
+            </p>
+
+            {featuredPublications?.length > 0 && (
+              <div className="flex flex-col mt-8">
+                <h2 className="text-left text-2xl">Featured Publications</h2>
+                <div className="flex overflow-scroll sm:overflow-visible sm:grid grid-cols-4 gap-4 mt-4">
+                  {featuredPublications.map((publication, publicationIndex) => {
+                    return (
+                      <div
+                        key={publicationIndex}
+                        onClick={() =>
+                          handlePublicationDetailsOpen(publication)
+                        }
+                        className="bg-white rounded-[32px] px-6 py-4 flex-none max-w-[310px] cursor-pointer hover:text-indigo-500 text-gray-600 hover:border-indigo-300 border border-transparent flex items-center overflow-visible"
+                      >
+                        <div className="flex flex-col gap-1 items-start justify-center w-full">
+                          <img
+                            className="h-[32px] flex-none object-contain"
+                            src={publication.wordLogo?.attributes?.url}
+                          />
+                          <div className="flex justify-between w-full">
+                            <p className="text-base font-normal">
+                              {publication?.name}
                             </p>
-                          )}
+                            {canViewPricing && (
+                              <p className="text-base font-bold">
+                                {publication?.getFormattedPrice()}
+                              </p>
+                            )}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </div>
               </div>
-            </div>
-          )}
-        </div>
-      </section>
-      <section className="flex justify-center relative" id="about">
-        <div className="container mx-auto px-6 max-w-7xl">
-          <PressList
-            publications={publications}
-            paginationData={paginationData}
-            handleAddItem={handleAddItem}
-            nextPage={nextPage}
-            prevPage={prevPage}
-            handleSearch={handleSearch}
-            handleCategory={handleCategory}
-            canViewPricing={canViewPricing}
-            handleSort={handleSort}
-            isLoadingPublications={isLoadingPublications}
-            handleRequirementsOpen={handlePublicationDetailsOpen}
+            )}
+          </div>
+        </section>
+        <section className="flex justify-center relative" id="about">
+          <div className="container mx-auto px-6 max-w-7xl">
+            <PressList
+              publications={publications}
+              paginationData={paginationData}
+              nextPage={nextPage}
+              prevPage={prevPage}
+              handleSearch={handleSearch}
+              handleCategory={handleCategory}
+              canViewPricing={canViewPricing}
+              handleSort={handleSort}
+              isLoadingPublications={isLoadingPublications}
+              handleRequirementsOpen={handlePublicationDetailsOpen}
+              handlePublicationInquiryOpen={handlePublicationInquiryOpen}
+              categories={
+                siteData?.attributes?.site_publication_categories?.data
+              }
+              handleFilter={handleFilter}
+            />
+          </div>
+        </section>
+
+        {isDetailOpen && (
+          <PublicationDetailModal
+            setIsOpen={setDetailOpen}
+            isOpen={isDetailOpen}
+            publication={highlightedPublication}
+            canViewPricing={!!session}
+            handleAddToCart={() => handleAddItem(highlightedPublication)}
             handlePublicationInquiryOpen={handlePublicationInquiryOpen}
-            categories={siteData?.attributes?.site_publication_categories?.data}
-            handleFilter={handleFilter}
           />
-        </div>
-      </section>
+        )}
+        {isInquiryOpen && (
+          <PublicationInquiryModal
+            site_id={siteData?.id}
+            publication={highlightedPublication}
+            isOpen={isInquiryOpen}
+            handleClose={() => {
+              setInquiryOpen(false), setHighlightedPublication(null);
+            }}
+          />
+        )}
 
-      {isDetailOpen && (
-        <PublicationDetailModal
-          setIsOpen={setDetailOpen}
-          isOpen={isDetailOpen}
-          publication={highlightedPublication}
-          canViewPricing={!!session}
-          handleAddToCart={() => handleAddItem(highlightedPublication)}
-          handlePublicationInquiryOpen={handlePublicationInquiryOpen}
-        />
-      )}
-      {isInquiryOpen && (
-        <PublicationInquiryModal
-          site_id={siteData?.id}
-          publication={highlightedPublication}
-          isOpen={isInquiryOpen}
-          handleClose={() => {
-            setInquiryOpen(false), setHighlightedPublication(null);
-          }}
-        />
-      )}
-
-      {/* <HowItWorks/>
+        {/* <HowItWorks/>
       <FAQs/>
       <Footer/> */}
+      </CartContext.Provider>
     </div>
   );
 };

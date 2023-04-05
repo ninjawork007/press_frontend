@@ -22,14 +22,21 @@ import DocViewerModal from "@/components/docViewerModal";
 import DocViewerModalQuestionnaire from "@/components/docViewerModalQuestionnaire";
 import StatusHandler from "@/lib/status-handler";
 import MessageList from "@/components/messageList";
-import ImageGallery from "@/components/campaign/imageGallery";
-import UploadImagesBox from "@/components/article/uploadImagesBox";
-import GoogleDocUpload from "@/components/article/googleDocUpload";
-import DropdownOptions from "@/components/campaign/dropdownOptions";
-import AddArticlesOptions from "@/components/campaign/addArticlesOptions";
-import Modal from "@/components/modal";
 
+import StatusLabel from "@/components/statusLabel";
+import CampaignManager from "@/lib/campaignManager";
+import SiteWrapper from "@/components/siteWrapper";
+import AlertMessage from "@/components/alertMessage";
+import AddArticlesOptions from "@/components/campaign/addArticlesOptions";
+import UploadImagesBox from "@/components/article/uploadImagesBox";
+import ImageGallery from "@/components/imageGallery";
+import Modal from "@/components/modal";
 import CampaignModel from "@/lib/models/campaign-model";
+
+import GoogleDocUpload from "@/components/article/googleDocUpload";
+
+import DropdownOptions from "@/components/campaign/dropdownOptions";
+
 function Example({ initialCampaign, role }) {
   const router = useRouter();
   const campaignId = router.query.id;
@@ -163,7 +170,7 @@ function Example({ initialCampaign, role }) {
     const data = { google_doc_url, status: "requires-action", draftCount: 1 };
     const id = selectedArticle.id;
 
-    API.articles.update(id, session, data).then(function (result) {
+    API.articles.update(id, data).then(function (result) {
       return API.campaigns
         .findOne(campaign?.id, session)
         .then(function (result) {
@@ -177,7 +184,7 @@ function Example({ initialCampaign, role }) {
           return null;
         });
     });
-    setIsCompleting(false);
+    setIsAddingGoogleDoc(false);
   };
 
   const setCampaignAsComplete = () => {
@@ -476,6 +483,7 @@ function Example({ initialCampaign, role }) {
   };
 
   const uploadImage = async (e) => {
+    console.log("e...", e);
     e.preventDefault();
     const files = e.target.files;
     const formData = new FormData();
@@ -650,6 +658,7 @@ function Example({ initialCampaign, role }) {
                     articles.map((article, index) => (
                       <ArticleCard
                         article={article}
+                        campaignId={campaignId}
                         key={article.id}
                         index={index}
                         isManager={isManager}
