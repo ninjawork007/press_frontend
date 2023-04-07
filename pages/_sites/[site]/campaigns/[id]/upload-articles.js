@@ -16,14 +16,15 @@
 */
 import { useState, useEffect } from "react";
 import API from "@/lib/api";
-import { UploadIcon, TrashIcon } from "@heroicons/react/outline";
-
-import Link from "next/link";
 import {
-  LockClosedIcon,
-  ArrowNarrowLeftIcon,
-  ArrowTopRightOnSquareIcon,
-} from "@heroicons/react/solid";
+  UploadIcon,
+  TrashIcon,
+  InformationCircleIcon,
+} from "@heroicons/react/outline";
+import PublicationDetailsModal from "@/components/publications/publicationDetailsModal";
+import PublicationModel from "@/lib/models/publication-model";
+import Link from "next/link";
+import { ArrowNarrowLeftIcon } from "@heroicons/react/solid";
 import { getSession, useSession, signIn, signOut } from "next-auth/react";
 import { useRouter } from "next/router";
 import { BarLoader } from "react-spinners";
@@ -33,14 +34,14 @@ import SiteWrapper from "@/components/siteWrapper";
 import classNames from "classnames";
 import { MoonLoader } from "react-spinners";
 
-function Example({ siteData, campaign }) {
+function UploadArticles({ siteData, campaign }) {
   const { data: session } = useSession();
   const router = useRouter();
-  const [isUploadingFile, setIsUploadingFile] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedPublications, setSelectedPublications] = useState([]);
   const [openGuidelines, setOpenGuidelines] = useState(false);
   const [purchasedPublications, setPurchasedPublications] = useState([]);
+  const [highlightedPublication, setHighlightedPublication] = useState(null);
 
   const [form, setForm] = useState({
     name: "",
@@ -129,6 +130,22 @@ function Example({ siteData, campaign }) {
       );
     }
     // alert(articles[index].publication)
+  };
+
+  const handleViewPublicationDetails = (e, publicationIndex) => {
+    e.preventDefault();
+
+    let purchasedPublicationId = publicationIndex;
+
+    const purchasedPublication = purchasedPublications.find(
+      (purchasedPublication) =>
+        purchasedPublication.id == purchasedPublicationId
+    );
+
+    const publication = new PublicationModel(
+      purchasedPublication.attributes?.publication?.data
+    );
+    setHighlightedPublication(publication);
   };
 
   const setFile = (files) => {
@@ -393,6 +410,22 @@ function Example({ siteData, campaign }) {
                             <option>No purchases found</option>
                           )}
                         </select>
+                        {article.purchased_publication && (
+                          <a
+                            className="text-right w-full float-right"
+                            onClick={(e) =>
+                              handleViewPublicationDetails(
+                                e,
+                                article.purchased_publication
+                              )
+                            }
+                          >
+                            <span className="text-indigo-600 underline cursor-pointer">
+                              View publication details{" "}
+                              <InformationCircleIcon className="w-4 h-4 inline" />
+                            </span>
+                          </a>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -459,7 +492,16 @@ function Example({ siteData, campaign }) {
 
         <WritingGuidelines open={openGuidelines} setOpen={setOpenGuidelines} />
       </div>
-      ``
+
+      {!!highlightedPublication && (
+        <PublicationDetailsModal
+          setIsOpen={() => setHighlightedPublication(null)}
+          isOpen={!!highlightedPublication}
+          publication={highlightedPublication}
+          canViewDoFollowAndSponsored={session?.profile?.can_view_secret_data}
+          showCTA={false}
+        />
+      )}
     </SiteWrapper>
   );
 }
@@ -506,4 +548,4 @@ export const getServerSideProps = async (context) => {
   };
 };
 
-export default Example;
+export default UploadArticles;

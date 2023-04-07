@@ -36,7 +36,7 @@ import CampaignModel from "@/lib/models/campaign-model";
 import GoogleDocUpload from "@/components/article/googleDocUpload";
 
 import DropdownOptions from "@/components/campaign/dropdownOptions";
-
+import { sentToPublishing, completeArticle } from "@/lib/utils/articleUtils";
 function Example({ initialCampaign, role }) {
   const router = useRouter();
   const campaignId = router.query.id;
@@ -334,51 +334,32 @@ function Example({ initialCampaign, role }) {
     }
   };
 
-  const approve = ({ articleId = null }) => {
-    const data = { status: "publishing", approval_date: new Date() };
-
-    API.articles.update(articleId, session, data).then(function (result) {
-      return API.campaigns
-        .findOne(campaign?.id, session)
-        .then(function (result) {
-          if (result.data?.data) {
-            let campaign = new CampaignModel(result.data?.data);
-            setCampaign(campaign);
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-          return null;
-        });
-    });
-    setIsApproving(false);
-  };
-
   const submitArticleUrl = async (e) => {
     e.preventDefault();
     const url = articleUrlFieldRef.current.value;
-    const data = { url, status: "completed", publish_date: new Date() };
-    const id = selectedArticle.id;
 
-    API.articles.update(id, session, data).then(function (result) {
-      return API.campaigns
-        .findOne(campaign?.id, session)
-        .then(function (result) {
-          if (result.data?.data) {
-            let campaign = new CampaignModel(result.data?.data);
-            setCampaign(campaign);
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-          return null;
-        });
+    await completeArticle(selectedArticle, url);
+    await API.campaigns.findOne(campaign?.id, session).then(function (result) {
+      if (result.data?.data) {
+        let campaign = new CampaignModel(result.data?.data);
+        setCampaign(campaign);
+      }
     });
+
     setIsCompleting(false);
   };
 
-  const handleApproveFlow = (article) => {
-    approve({ articleId: article.id });
+  const handleApproveFlow = async (article) => {
+    await sentToPublishing(article);
+
+    await API.campaigns.findOne(campaign?.id, session).then(function (result) {
+      if (result.data?.data) {
+        let campaign = new CampaignModel(result.data?.data);
+        setCampaign(campaign);
+      }
+    });
+
+    setIsApproving(false);
   };
 
   const handleWritingFlow = (article) => {

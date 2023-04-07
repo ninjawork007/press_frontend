@@ -99,12 +99,12 @@ export default function PressList({
         ...viewOptions,
         showImageRequirement: !viewOptions.showImageRequirement,
       });
-      // } else if (type == "google-news-toggle") {
-      //   localStorageViewOptions.showGoogleNews = !viewOptions.showGoogleNews;
-      //   setViewOptions({
-      //     ...viewOptions,
-      //     showGoogleNews: !viewOptions.showGoogleNews,
-      //   });
+    } else if (type == "google-news-toggle") {
+      localStorageViewOptions.showGoogleNews = !viewOptions.showGoogleNews;
+      setViewOptions({
+        ...viewOptions,
+        showGoogleNews: !viewOptions.showGoogleNews,
+      });
     } else if (type == "indexed-toggle") {
       localStorageViewOptions.showIndexed = !viewOptions.showIndexed;
       setViewOptions({

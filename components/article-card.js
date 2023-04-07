@@ -122,7 +122,7 @@ export default function ArticleCard({
                   onClick={handleApproveFlow}
                 >
                   <CheckCircleIcon className="h-6 w-6" aria-hidden="true" />
-                  {isManager ? "Sent to publishing" : "Approve"}
+                  {isManager ? "Sent to publishing" : "Publish"}
                 </button>
               )}
             </>

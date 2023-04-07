@@ -25,6 +25,7 @@ export default function FilterOptions({
   // }
   const [options, setOptions] = useState([
     { name: "is_indexed", label: "Indexed", value: "Y" },
+    { name: "news", label: "Google News", value: "Y" },
   ]);
 
   useEffect(() => {

@@ -25,7 +25,7 @@ import ImageGallery from "@/components/imageGallery";
 import Modal from "@/components/modal";
 import CampaignModel from "@/lib/models/campaign-model";
 import DropdownOptions from "@/components/campaign/dropdownOptions";
-
+import { sentToPublishing } from "@/lib/utils/articleUtils";
 function MyCampaigns({ initialCampaign, role, siteData }) {
   const router = useRouter();
 
@@ -352,10 +352,7 @@ function MyCampaigns({ initialCampaign, role, siteData }) {
       return;
     }
 
-    let result = await campaignManager.approveForPublishing({
-      article: selectedArticle,
-      session: session,
-    });
+    await sentToPublishing(selectedArticle);
 
     let campaignData = await API.campaigns.findOne(campaignId, session);
     let campaign = new CampaignModel(campaignData.data?.data);

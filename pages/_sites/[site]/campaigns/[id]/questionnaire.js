@@ -23,6 +23,7 @@ import {
   DownloadIcon,
   UploadIcon,
   DocumentTextIcon,
+  InformationCircleIcon,
 } from "@heroicons/react/outline";
 
 import Link from "next/link";
@@ -32,12 +33,15 @@ import { useRouter } from "next/router";
 import { BarLoader } from "react-spinners";
 import SiteWrapper from "@/components/siteWrapper";
 import DocViewerModalQuestionnaire from "@/components/docViewerModalQuestionnaire";
-
+import PublicationDetailsModal from "@/components/publications/publicationDetailsModal";
+import PublicationModel from "@/lib/models/publication-model";
 import classNames from "classnames";
-function Example({ siteData, campaign }) {
+
+function Questionnaire({ siteData, campaign }) {
   const { data: session } = useSession();
   const router = useRouter();
   const [isUploadingFile, setIsUploadingFile] = useState(false);
+  const [highlightedPublication, setHighlightedPublication] = useState(null);
 
   const [form, setForm] = useState({
     name: "",
@@ -171,6 +175,13 @@ function Example({ siteData, campaign }) {
         publicationId,
       ]);
     }
+  };
+
+  const handleViewPublicationDetails = (e, publicationData) => {
+    e.preventDefault();
+
+    const publication = new PublicationModel(publicationData);
+    setHighlightedPublication(publication);
   };
 
   return (
@@ -362,7 +373,7 @@ function Example({ siteData, campaign }) {
               {purchasedPublications.map((purchasedPublication) => (
                 <div
                   className={classNames(
-                    "mt-2 border rounded-2xl",
+                    "mt-2 border rounded-2xl flex items-center justify-between px-4",
                     selectedPurchasedPublications.includes(
                       purchasedPublication.id
                     ) && "border-indigo-500"
@@ -371,7 +382,7 @@ function Example({ siteData, campaign }) {
                 >
                   <label
                     htmlFor={`purchased-publication-${purchasedPublication.id}`}
-                    className=" bg-white rounded-full px-4 py-4 w-full flex gap-2 items-center max-w-sm"
+                    className=" bg-white rounded-full py-4 w-full flex gap-2 items-center max-w-sm"
                   >
                     <input
                       id={`purchased-publication-${purchasedPublication.id}`}
@@ -392,6 +403,20 @@ function Example({ siteData, campaign }) {
                       }
                     </span>
                   </label>
+                  <a
+                    className="text-right"
+                    onClick={(e) =>
+                      handleViewPublicationDetails(
+                        e,
+                        purchasedPublication?.attributes?.publication?.data
+                      )
+                    }
+                  >
+                    <span className="text-indigo-600 underline cursor-pointer">
+                      View details{" "}
+                      <InformationCircleIcon className="w-4 h-4 inline" />
+                    </span>
+                  </a>
                 </div>
               ))}
             </div>
@@ -403,6 +428,15 @@ function Example({ siteData, campaign }) {
         setIsOpen={setIsViewingQuestionnaire}
         isOpen={isViewingQuestionnaire}
       />
+      {!!highlightedPublication && (
+        <PublicationDetailsModal
+          setIsOpen={() => setHighlightedPublication(null)}
+          isOpen={!!highlightedPublication}
+          publication={highlightedPublication}
+          canViewDoFollowAndSponsored={session?.profile?.can_view_secret_data}
+          showCTA={false}
+        />
+      )}
     </SiteWrapper>
   );
 }
@@ -449,4 +483,4 @@ export const getServerSideProps = async (context) => {
   };
 };
 
-export default Example;
+export default Questionnaire;

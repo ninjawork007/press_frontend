@@ -277,7 +277,7 @@ export default function PublicationCard({
               {canViewDoFollowAndSponsored && (
                 <SponsorLabel isSponsored={publication.isSponsored} />
               )}
-              {/* {showGoogleNews && <NewsLabel news={publication.news} />} */}
+              {showGoogleNews && <NewsLabel news={publication.news} />}
               {showIndexed && <IndexLabel indexed={publication.isIndexed} />}
             </div>
           </div>

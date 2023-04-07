@@ -28,6 +28,7 @@ import {
   renderStatus,
 } from "@/lib/utils/articleUtils";
 import ApprovalModal from "@/components/approvalModal";
+import { useRouter } from "next/router";
 
 function Article({ initialCampaign, article, role, siteData }) {
   const { data: session } = useSession();
@@ -37,6 +38,7 @@ function Article({ initialCampaign, article, role, siteData }) {
   const [openCart, setOpenCart] = useState(false);
   const [list, updateList] = useState([]);
   const [isApproving, setIsApproving] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     const unsortedDrafts = selectedArticle?.drafts || [];
@@ -68,7 +70,9 @@ function Article({ initialCampaign, article, role, siteData }) {
 
     const documents = [...drafts, ...revisions];
 
-    setSelectedDraft(documents[0]);
+    setSelectedDraft(
+      documents[documents.length > 0 ? documents.length - 1 : 0]
+    );
   }, [selectedArticle]);
 
   const displaySidebar = () => {
@@ -117,16 +121,17 @@ function Article({ initialCampaign, article, role, siteData }) {
       <div className="min-h-full py-12 px-4 sm:px-6 lg:px-8 h-full max-w-7xl mx-auto">
         <div className="flex lg:flex-col sm:flex-row gap-4 justify-between lg:items-start sm:items-center">
           <div className="flex">
-            <Link href={`/campaigns/${campaign.id}`}>
-              <a className="flex items-center gap-2 text-gray-500">
-                <ArrowNarrowLeftIcon
-                  className="block h-6 w-6"
-                  aria-hidden="true"
-                />
+            <a
+              className="flex items-center gap-2 text-gray-500"
+              onClick={() => router.back()}
+            >
+              <ArrowNarrowLeftIcon
+                className="block h-6 w-6"
+                aria-hidden="true"
+              />
 
-                <p className="font-bold">Back</p>
-              </a>
-            </Link>
+              <p className="font-bold">Back</p>
+            </a>
           </div>
           <div className="flex flex-row items-center gap-4 w-full flex-wrap">
             <div className="flex flex-row flex-grow items-center gap-4">
@@ -176,7 +181,9 @@ function Article({ initialCampaign, article, role, siteData }) {
                       d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"
                     />
                   </svg>
-                  Upload Photos
+                  {selectedArticle.images?.length > 0
+                    ? `Photos (${selectedArticle.images.length})`
+                    : "Upload Photos"}
                 </button>
                 {selectedArticle?.googleDocUrl &&
                   requiresClientAction(selectedArticle?.status) && (
@@ -185,7 +192,7 @@ function Article({ initialCampaign, article, role, siteData }) {
                       onClick={handleSubmitForReview}
                     >
                       <PencilAltIcon className="h-6 w-6" aria-hidden="true" />
-                      Submit for Review
+                      Request Review
                     </button>
                   )}
                 {requiresClientAction(selectedArticle.status) && (
@@ -195,7 +202,7 @@ function Article({ initialCampaign, article, role, siteData }) {
                     onClick={() => setIsApproving(true)}
                   >
                     <CheckCircleIcon className="h-6 w-6" aria-hidden="true" />
-                    {isManager ? "Sent to publishing" : "Approve"}
+                    {isManager ? "Sent to publishing" : "Publish"}
                   </button>
                 )}
 
@@ -220,17 +227,34 @@ function Article({ initialCampaign, article, role, siteData }) {
           <div class="flex flex-row justify-between w-full">
             <div class="flex flex-col grow gap-4">
               <div className="flex flex-row items-center gap-4 border-b border-gray-200 pb-4 mb-4">
+                <p className="text-primary font-bold">
+                  {selectedArticle?.purchasedPublication?.publication?.name}
+
+                  {/* {isApprovedForPublishingByUser && !isManager && `You have appproved for publishing`} */}
+                </p>
                 <p className="text-sm text-gray-600 flex flex-row gap-1 items-center">
                   <UserIcon
-                    className="h-6 w-6 text-gray-600"
+                    className="h-4 w-4 text-gray-600"
                     aria-hidden="true"
                   />
                   By{" "}
                   <b>
-                    {selectedArticle?.purchasedPublication?.publication?.name}
+                    {selectedArticle.isWrittenByUser
+                      ? "You"
+                      : `${siteData.attributes.name} Team`}
                   </b>
                   {/* {isApprovedForPublishingByUser && !isManager && `You have appproved for publishing`} */}
                 </p>
+                <div>
+                  {/* <img
+                    className="h-[32px] flex-none object-contain"
+                    src={
+                      selectedArticle?.purchasedPublication?.publication.logo
+                        ?.attributes?.url
+                    }
+                  /> */}
+                </div>
+
                 {renderStatus(selectedArticle.status, isManager)}
 
                 {selectedArticle?.approvedForPublishing &&
@@ -266,7 +290,7 @@ function Article({ initialCampaign, article, role, siteData }) {
                     </b>
                   </p>
                 )}
-                <p>ID: {selectedArticle?.id}</p>
+                <p className="text-gray-500">ID: {selectedArticle?.id}</p>
               </div>
               {/* <div class="flex flex-row justify-between items-center gap-4 border-t border-gray-200 py-4">
                 <div className="flex flex-row gap-4">

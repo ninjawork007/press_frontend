@@ -174,7 +174,7 @@ export default function Example({
 
               </Menu.Item> */}
 
-            {/* <Menu.Item>
+            <Menu.Item>
               <a
                 onClick={(e) => {
                   toggleView(e);
@@ -204,7 +204,7 @@ export default function Example({
                   ></span>
                 </Switch>
               </a>
-            </Menu.Item> */}
+            </Menu.Item>
 
             <Menu.Item>
               <a

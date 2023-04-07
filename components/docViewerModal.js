@@ -98,7 +98,7 @@ export default function Example({
                   <div className="flex flex-col sm:flex-row justify-between">
                     <p className="max-w-lg text-sm">
                       If {"you're"} ready to publish this draft, please click
-                      {` "Approve"`}. Otherwise please provide feedback in the
+                      {` "Publish"`}. Otherwise please provide feedback in the
                       document below by commenting or redlining. Once your
                       feedback is complete, please click {`"Submit for Review"`}
                     </p>
@@ -121,7 +121,7 @@ export default function Example({
                             className="h-6 w-6"
                             aria-hidden="true"
                           />
-                          {isManager ? "Sent to publishing" : "Approve"}
+                          {isManager ? "Sent to publishing" : "Publish"}
                         </button>
                       )}
                     </div>

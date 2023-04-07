@@ -28,6 +28,7 @@ export default function PublicationDetailsModal({
   handlePublicationInquiryOpen,
   canViewPricing,
   canViewDoFollowAndSponsored,
+  showCTA = true,
 }) {
   const cancelButtonRef = useRef(null);
   const { handleAddItem } = useContext(CartContext);
@@ -182,7 +183,7 @@ export default function PublicationDetailsModal({
                               </>
                             )}
 
-                            {/* <NewsLabel news={publication?.news} /> */}
+                            <NewsLabel news={publication?.news} />
 
                             <IndexLabel indexed={publication?.isIndexed} />
                           </dd>
@@ -214,40 +215,44 @@ export default function PublicationDetailsModal({
                                     <span className="font-bold">
                                       The publication selected has restrictions:
                                     </span>
-                                    <p className="font-base">
+                                    <ReactMarkdown className="text-red-600 prose prose-sm  overflow-y-scroll max-h-[200px]">
                                       {publication?.requirements}
-                                    </p>
+                                    </ReactMarkdown>
                                   </div>
                                 </span>
                               </div>
                             </div>
                           </>
                         )}
-                        <hr className="border-1 hidden lg:flex" />
-                        <div className="hidden xl:flex flex-row justify-between gap-4 px-6 py-6">
-                          {publication.requiresInquiry ? (
-                            <button
-                              className="button-secondary blue large w-full shadow-sm"
-                              onClick={() =>
-                                handlePublicationInquiryOpen(publication)
-                              }
-                            >
-                              <span className="ml-2">Inquire</span>
-                            </button>
-                          ) : (
-                            <button
-                              className="button-secondary blue large w-full shadow-sm"
-                              onClick={handleAddToCart}
-                            >
-                              <PlusIcon
-                                className="block h-4 w-4"
-                                aria-hidden="true"
-                              />
+                        {showCTA && (
+                          <>
+                            <hr className="border-1 hidden lg:flex" />
+                            <div className="hidden xl:flex flex-row justify-between gap-4 px-6 py-6">
+                              {publication.requiresInquiry ? (
+                                <button
+                                  className="button-secondary blue large w-full shadow-sm"
+                                  onClick={() =>
+                                    handlePublicationInquiryOpen(publication)
+                                  }
+                                >
+                                  <span className="ml-2">Inquire</span>
+                                </button>
+                              ) : (
+                                <button
+                                  className="button-secondary blue large w-full shadow-sm"
+                                  onClick={handleAddToCart}
+                                >
+                                  <PlusIcon
+                                    className="block h-4 w-4"
+                                    aria-hidden="true"
+                                  />
 
-                              <span className="ml-2">Accept and apply</span>
-                            </button>
-                          )}
-                        </div>
+                                  <span className="ml-2">Accept and apply</span>
+                                </button>
+                              )}
+                            </div>
+                          </>
+                        )}
                       </div>
                     </div>
                   </div>

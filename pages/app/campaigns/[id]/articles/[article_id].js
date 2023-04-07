@@ -34,6 +34,8 @@ import {
   pressTeamReviewing,
 } from "@/lib/utils/articleUtils";
 import CompleteModal from "@/components/completeModal";
+import { useRouter } from "next/router";
+import { uploadRevisedArticle } from "../../../../../lib/utils/articleUtils";
 
 function Article({ initialCampaign, article, role }) {
   const [openCart, setOpenCart] = useState(false);
@@ -51,6 +53,7 @@ function Article({ initialCampaign, article, role }) {
   const [isApproving, setIsApproving] = useState(false);
   const [isCompleting, setIsCompleting] = useState(false);
   const articleUrlFieldRef = useRef(null);
+  const router = useRouter();
 
   useEffect(() => {
     console.log("article", article);
@@ -84,7 +87,9 @@ function Article({ initialCampaign, article, role }) {
 
     const documents = [...drafts, ...revisions];
 
-    setSelectedDraft(documents[0]);
+    setSelectedDraft(
+      documents[documents.length > 0 ? documents.length - 1 : 0]
+    );
   }, [selectedArticle]);
   const downloadURI = (uri, name) => {
     var link = document.createElement("a");
@@ -103,61 +108,25 @@ function Article({ initialCampaign, article, role }) {
   const approvedForPublishingRef = useRef(null);
   const { data: session } = useSession();
   const isManager = role === "Manager";
-  const uploadRevisedArticle = async (e) => {
+  const handleRevisedArticle = async (e) => {
     e.preventDefault();
-    const id = e.target.id;
 
+    if (files && files.length == 0) {
+      alert("Please upload a file");
+      return;
+    }
     const feedback = feedbackRef.current.value;
 
-    let draftCount = selectedArticle?.draftCount || 0;
-    draftCount++;
+    const updatedArticle = await uploadRevisedArticle(
+      selectedArticle,
+      files[0],
+      feedback
+    );
 
-    let data = { id, feedback, draftCount };
-    data.status = "requires-action";
+    setSelectedArticle(updatedArticle);
 
-    if (files && files.length > 0) {
-      const formData = new FormData();
-      formData.append("files", files[0]);
-      formData.append("ref", "api::article.article");
-      formData.append("refId", id);
-      formData.append("field", "drafts");
+    setFiles([]);
 
-      data.formData = formData;
-    }
-
-    API.articles
-      .revise(data, session)
-      .then(function (result) {
-        if (feedback) {
-          return API.messages.create(
-            {
-              text: feedback,
-              campaign: campaign?.id,
-              article: selectedArticle?.id,
-              profile: session.profile?.id,
-              is_from_client: false,
-              type: "comment",
-            },
-            session
-          );
-        } else {
-          return;
-        }
-      })
-      .then(function (messageResult) {
-        return API.campaigns
-          .findOne(campaign?.id, session)
-          .then(function (result) {
-            let campaign = new CampaignModel(result.data?.data);
-            setCampaign(campaign);
-            setFiles([]);
-            setFeedback("");
-          })
-          .catch((err) => {
-            console.log(err);
-            return null;
-          });
-      });
     setIsRevising(false);
   };
 
@@ -210,16 +179,17 @@ function Article({ initialCampaign, article, role }) {
       <div className="min-h-full py-12 px-4 sm:px-6 lg:px-8 h-full max-w-7xl mx-auto">
         <div className="flex lg:flex-col sm:flex-row gap-4 justify-between lg:items-start sm:items-center">
           <div className="flex">
-            <Link href={`/campaigns/${campaign.id}`}>
-              <a className="flex items-center gap-2 text-gray-500">
-                <ArrowNarrowLeftIcon
-                  className="block h-6 w-6"
-                  aria-hidden="true"
-                />
+            <a
+              className="flex items-center gap-2 text-gray-500"
+              onClick={() => router.back()}
+            >
+              <ArrowNarrowLeftIcon
+                className="block h-6 w-6"
+                aria-hidden="true"
+              />
 
-                <p className="font-bold">Back</p>
-              </a>
-            </Link>
+              <p className="font-bold">Back</p>
+            </a>
           </div>
           <div className="flex items-center gap-4 w-full max-w-full justify-between min-w-0 flex-wrap">
             <div className="flex-shrink">
@@ -270,7 +240,12 @@ function Article({ initialCampaign, article, role }) {
                       d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"
                     />
                   </svg>
-                  {isManager ? <span>Photos</span> : <span>Photos</span>}
+
+                  <span>
+                    Photos (
+                    {selectedArticle.images ? selectedArticle.images.length : 0}
+                    )
+                  </span>
                 </button>
                 {selectedArticle?.googleDocUrl &&
                   pressTeamReviewing(selectedArticle?.status) && (
@@ -327,17 +302,27 @@ function Article({ initialCampaign, article, role }) {
           <div class="flex flex-row justify-between w-full">
             <div class="flex flex-col grow gap-4">
               <div className="flex flex-row items-center gap-4">
+                <p className="text-primary font-bold">
+                  {selectedArticle?.purchasedPublication?.publication?.name}
+
+                  {/* {isApprovedForPublishingByUser && !isManager && `You have appproved for publishing`} */}
+                </p>
+                <p className="text-gray-600 text-sm">
+                  Client <b>{campaign?.profile?.name}</b>
+                  {/* {isApprovedForPublishingByUser && !isManager && `You have appproved for publishing`} */}
+                </p>
                 <p className="text-sm text-gray-600 flex flex-row gap-1 items-center">
                   <UserIcon
-                    className="h-6 w-6 text-gray-600"
+                    className="h-4 w-4 text-gray-600"
                     aria-hidden="true"
                   />
                   By{" "}
                   <b>
-                    {selectedArticle?.isWrittenByClient ? "You" : "Press Team"}
+                    {selectedArticle.isWrittenByUser ? "Client" : `Our Team`}
                   </b>
                   {/* {isApprovedForPublishingByUser && !isManager && `You have appproved for publishing`} */}
                 </p>
+
                 {selectedArticle.draftCount > 0 && (
                   <p className="text-gray-600">
                     Draft #{selectedArticle.draftCount}
@@ -377,6 +362,7 @@ function Article({ initialCampaign, article, role }) {
                     </b>
                   </p>
                 )}
+                <p className="text-gray-500">ID: {selectedArticle?.id}</p>
               </div>
               <div class="flex flex-row justify-between items-center gap-4 border-t border-gray-200 py-4">
                 {/* <div className="flex flex-row gap-4">
@@ -411,7 +397,7 @@ function Article({ initialCampaign, article, role }) {
       <RevisionModal
         isUpload={isManager && selectedArticle?.draftCount === 0}
         isManager={isManager}
-        uploadRevisedArticle={uploadRevisedArticle}
+        uploadRevisedArticle={handleRevisedArticle}
         files={files}
         setFiles={setFiles}
         approvedForPublishingRef={approvedForPublishingRef}
