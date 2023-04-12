@@ -1,13 +1,27 @@
 import { TrashIcon, DownloadIcon } from "@heroicons/react/outline";
+import { saveAs } from 'file-saver'
 
 export default function ImageGallery({ images, deleteImage, isManager }) {
-  const downloadURI = (uri, name) => {
-    var link = document.createElement("a");
-    link.download = name;
-    link.href = `${uri}`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const downloadURI = async (uri, name) => {
+    try {
+      const headers = new Headers();
+      headers.append('Content-Disposition', 'attachment');
+
+
+      const response = await fetch(uri, {
+        headers
+      });
+
+      if (!response.ok) {
+        throw new Error(response);
+      }
+
+      const blob = await response.blob();
+      saveAs(blob, name);
+
+    } catch (error) {
+      console.error('Failed to download file', error);
+    }
   };
 
   return (
