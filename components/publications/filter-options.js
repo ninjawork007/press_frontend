@@ -54,7 +54,7 @@ export default function FilterOptions({
   };
 
   return (
-    <Popover.Group className="hidden sm:flex sm:items-baseline sm:space-x-8">
+    <Popover.Group className="flex sm:items-baseline sm:space-x-8">
       <Popover
         as="div"
         id={`desktop-menu`}

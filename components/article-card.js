@@ -285,7 +285,7 @@ export default function ArticleCard({
         )}
       </div>
 
-      <div class="flex flex-row gap-4">
+      <div class="flex flex-row flex-wrap gap-2 sm:gap-4">
         {article.publishDate && (
           <p className="text-sm text-gray-600 flex flex-row gap-1 items-center">
             <GlobeAltIcon className="h-4 w-4" aria-hidden="true" />
@@ -309,14 +309,14 @@ export default function ArticleCard({
 
       {articleIsPublished(article.status) && (
         <>
-          <div className="w-full flex items-center">
-            <p className="text-sm font-medium text-gray-500 whitespace-nowrap">
+          <div className="w-full">
+            <p className="text-sm font-medium text-gray-500 whitespace-pre-wrap break-words">
               Published Link:&nbsp;
               <a
                 href={article.url}
                 target="_blank"
                 rel="noreferrer"
-                className="text-green-600 font-bold cursor-pointer whitespace-pre-wrap text-sm"
+                className="text-green-600 font-bold cursor-pointer text-sm"
               >
                 {article.url}{" "}
                 <ExternalLinkIcon

@@ -119,8 +119,8 @@ function Article({ initialCampaign, article, role, siteData }) {
         site_id={siteData?.id}
       />
       <div className="min-h-full py-12 px-4 sm:px-6 lg:px-8 h-full max-w-7xl mx-auto">
-        <div className="flex lg:flex-col sm:flex-row gap-4 justify-between lg:items-start sm:items-center">
-          <div className="flex">
+        <div className="space-y-4">
+          {/* <div className="flex">
             <a
               className="flex items-center gap-2 text-gray-500"
               onClick={() => router.back()}
@@ -132,24 +132,19 @@ function Article({ initialCampaign, article, role, siteData }) {
 
               <p className="font-bold">Back</p>
             </a>
-          </div>
-          <div className="flex flex-row items-center gap-4 w-full flex-wrap">
-            <div className="flex flex-row flex-grow items-center gap-4">
-              <h2 className="text-4xl font-medium text-gray-900 capitalize">
-                {selectedArticle?.name
-                  ? selectedArticle.name
-                  : `Article: ${selectedArticle.id}`}
-              </h2>
-              {selectedArticle.draftCount > 0 && (
-                <p className="text-gray-600">
-                  Draft #{selectedArticle.draftCount}
-                </p>
-              )}
-              {/* <div className="flex flex-row gap-1 items-center bg-[#FEF3F2] px-[12px] py-[8px] rounded-lg text-[#B42318] h-[32px]">
+          </div> */}
+          <div className="flex flex-row items-start gap-4 w-full flex-wrap justify-between">
+            <h2 className="text-4xl font-medium text-gray-900 capitalize whitespace-pre-wrap break-words max-w-full lg:max-w-[67%]">
+              {selectedArticle?.name
+                ? selectedArticle.name
+                : `Article: ${selectedArticle.id}`}
+            </h2>
+
+            {/* <div className="flex flex-row gap-1 items-center bg-[#FEF3F2] px-[12px] py-[8px] rounded-lg text-[#B42318] h-[32px]">
                 <span className="rounded-full w-[5px] h-[5px] block bg-[#F04438]"></span>
                 <span>2</span>
               </div> */}
-            </div>
+
             <div className="flex flex-row items-center gap-4">
               <div className="flex gap-4 justify-between items-center">
                 {selectedDraft && (
@@ -224,75 +219,75 @@ function Article({ initialCampaign, article, role, siteData }) {
               </div>
             </div>
           </div>
-          <div class="flex flex-row justify-between w-full">
-            <div class="flex flex-col grow gap-4">
-              <div className="flex flex-row items-center gap-4 border-b border-gray-200 pb-4 mb-4">
-                <p className="text-primary font-bold">
-                  {selectedArticle?.purchasedPublication?.publication?.name}
 
-                  {/* {isApprovedForPublishingByUser && !isManager && `You have appproved for publishing`} */}
-                </p>
-                <p className="text-sm text-gray-600 flex flex-row gap-1 items-center">
-                  <UserIcon
-                    className="h-4 w-4 text-gray-600"
-                    aria-hidden="true"
-                  />
-                  By{" "}
-                  <b>
-                    {selectedArticle.isWrittenByUser
-                      ? "You"
-                      : `${siteData.attributes.name} Team`}
-                  </b>
-                  {/* {isApprovedForPublishingByUser && !isManager && `You have appproved for publishing`} */}
-                </p>
-                <div>
-                  {/* <img
+          <div className="flex flex-row items-center gap-4 border-b border-gray-200 pb-4 mb-4 flex-wrap">
+            {selectedArticle.draftCount > 0 && (
+              <p className="text-gray-600">
+                Draft #{selectedArticle.draftCount}
+              </p>
+            )}
+            <p className="text-primary font-bold">
+              {selectedArticle?.purchasedPublication?.publication?.name}
+
+              {/* {isApprovedForPublishingByUser && !isManager && `You have appproved for publishing`} */}
+            </p>
+            <p className="text-sm text-gray-600 flex flex-row gap-1 items-center">
+              <UserIcon className="h-4 w-4 text-gray-600" aria-hidden="true" />
+              By{" "}
+              <b>
+                {selectedArticle.isWrittenByUser
+                  ? "You"
+                  : `${siteData.attributes.name} Team`}
+              </b>
+              {/* {isApprovedForPublishingByUser && !isManager && `You have appproved for publishing`} */}
+            </p>
+            <div>
+              {/* <img
                     className="h-[32px] flex-none object-contain"
                     src={
                       selectedArticle?.purchasedPublication?.publication.logo
                         ?.attributes?.url
                     }
                   /> */}
-                </div>
+            </div>
 
-                {renderStatus(selectedArticle.status, isManager)}
+            {renderStatus(selectedArticle.status, isManager)}
 
-                {selectedArticle?.approvedForPublishing &&
-                  !articleIsPublished(selectedArticle.status) && (
-                    <StatusLabel
-                      title={
-                        isManager
-                          ? "Approved for publishing by Client"
-                          : "You have approved for publishing"
-                      }
-                      status={isManager ? 1 : 2}
-                    />
-                  )}
-                {selectedArticle.updatedAt && (
-                  <p className="text-sm text-gray-500 flex flex-row gap-1 items-center">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke-width="1.5"
-                      stroke="currentColor"
-                      class="h-6 w-6 text-gray-500"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"
-                      />
-                    </svg>{" "}
-                    Last Update{" "}
-                    <b>
-                      {DateHandler.formatDateByDay(selectedArticle.updatedAt)}
-                    </b>
-                  </p>
-                )}
-                <p className="text-gray-500">ID: {selectedArticle?.id}</p>
-              </div>
-              {/* <div class="flex flex-row justify-between items-center gap-4 border-t border-gray-200 py-4">
+            {selectedArticle?.approvedForPublishing &&
+              !articleIsPublished(selectedArticle.status) && (
+                <StatusLabel
+                  title={
+                    isManager
+                      ? "Approved for publishing by Client"
+                      : "You have approved for publishing"
+                  }
+                  status={isManager ? 1 : 2}
+                />
+              )}
+            {selectedArticle.updatedAt && (
+              <p className="text-sm text-gray-500 flex flex-row gap-1 items-center">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  class="h-6 w-6 text-gray-500"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"
+                  />
+                </svg>{" "}
+                Last Update{" "}
+                <b>{DateHandler.formatDateByDay(selectedArticle.updatedAt)}</b>
+              </p>
+            )}
+            <p className="text-gray-500">ID: {selectedArticle?.id}</p>
+          </div>
+
+          {/* <div class="flex flex-row justify-between items-center gap-4 border-t border-gray-200 py-4">
                 <div className="flex flex-row gap-4">
                   <div class="flex flex-row items-center gap-1 rounded-full p-2 bg-white h-[56px]">
                     <button className="button-secondary !border-0 bg-blue-100 text-blue-700 !py-4 !px-6 h-[36px]">
@@ -304,10 +299,9 @@ function Article({ initialCampaign, article, role, siteData }) {
                   </div>
                 </div>
               </div> */}
-            </div>
-          </div>
         </div>
-        <div className="flex flex-col">
+
+        <div className="flex flex-col border-t border-gray-200 pt-4">
           <iframe
             id="msdoc-iframe"
             title="msdoc-iframe"

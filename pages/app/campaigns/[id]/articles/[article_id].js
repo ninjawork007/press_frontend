@@ -177,8 +177,8 @@ function Article({ initialCampaign, article, role }) {
       />
 
       <div className="min-h-full py-12 px-4 sm:px-6 lg:px-8 h-full max-w-7xl mx-auto">
-        <div className="flex lg:flex-col sm:flex-row gap-4 justify-between lg:items-start sm:items-center">
-          <div className="flex">
+        <div className="space-y-4">
+          {/* <div className="flex">
             <a
               className="flex items-center gap-2 text-gray-500"
               onClick={() => router.back()}
@@ -190,18 +190,17 @@ function Article({ initialCampaign, article, role }) {
 
               <p className="font-bold">Back</p>
             </a>
-          </div>
-          <div className="flex items-center gap-4 w-full max-w-full justify-between min-w-0 flex-wrap">
-            <div className="flex-shrink">
-              <h2 className="text-4xl font-medium text-gray-900 capitalize whitespace-pre-wrap break-words">
-                {selectedArticle?.name || `Article ${selectedArticle?.id}`}
-              </h2>
-              {/* <div className="flex flex-row gap-1 items-center bg-[#FEF3F2] px-[12px] py-[8px] rounded-lg text-[#B42318] h-[32px]">
+          </div> */}
+          <div className="flex flex-row items-start gap-4 w-full flex-wrap justify-between">
+            <h2 className="text-4xl font-medium text-gray-900 capitalize whitespace-pre-wrap break-words max-w-full lg:max-w-[67%]">
+              {selectedArticle?.name || `Article ${selectedArticle?.id}`}
+            </h2>
+            {/* <div className="flex flex-row gap-1 items-center bg-[#FEF3F2] px-[12px] py-[8px] rounded-lg text-[#B42318] h-[32px]">
               <span className="rounded-full w-[5px] h-[5px] block bg-[#F04438]"></span>
               <span>2</span>
             </div> */}
-            </div>
-            <div className="flex flex-row items-center gap-4 justify-end flex-shrink-0">
+
+            <div className="flex flex-row items-center gap-4 justify-end flex-shrink-0 ">
               <div className="flex gap-4 justify-between items-center">
                 {selectedDraft && (
                   <button
@@ -301,7 +300,7 @@ function Article({ initialCampaign, article, role }) {
           </div>
           <div class="flex flex-row justify-between w-full">
             <div class="flex flex-col grow gap-4">
-              <div className="flex flex-row items-center gap-4">
+              <div className="flex flex-row items-center gap-4 flex-wrap">
                 <p className="text-primary font-bold">
                   {selectedArticle?.purchasedPublication?.publication?.name}
 

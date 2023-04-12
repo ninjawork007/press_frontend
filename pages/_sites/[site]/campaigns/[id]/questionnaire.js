@@ -36,12 +36,14 @@ import DocViewerModalQuestionnaire from "@/components/docViewerModalQuestionnair
 import PublicationDetailsModal from "@/components/publications/publicationDetailsModal";
 import PublicationModel from "@/lib/models/publication-model";
 import classNames from "classnames";
+import QuestionnairesModal from "@/components/questionnairesModal";
 
 function Questionnaire({ siteData, campaign }) {
   const { data: session } = useSession();
   const router = useRouter();
   const [isUploadingFile, setIsUploadingFile] = useState(false);
   const [highlightedPublication, setHighlightedPublication] = useState(null);
+  const [isViewingQuestionnaires, setIsViewingQuestionnaires] = useState(false);
 
   const [form, setForm] = useState({
     name: "",
@@ -239,7 +241,7 @@ function Questionnaire({ siteData, campaign }) {
           ) : (
             <div className="space-y-8 col-span-2">
               <div>
-                <h2 className="text-4xl text-gray-900">Questionnaire</h2>
+                <h2 className="text-4xl text-gray-900">Request Articles</h2>
                 <p className="mt-4">
                   To help our writers in creating the best story for you, we’ll
                   need a better understanding of your brand. Please download the
@@ -249,7 +251,7 @@ function Questionnaire({ siteData, campaign }) {
 
               <a
                 className="button-secondary gap-2"
-                onClick={() => downloadURI()}
+                onClick={() => setIsViewingQuestionnaires(true)}
               >
                 <DownloadIcon className="mx-auto h-4 w-4" aria-hidden="true" />
 
@@ -437,6 +439,10 @@ function Questionnaire({ siteData, campaign }) {
           showCTA={false}
         />
       )}
+      <QuestionnairesModal
+        isOpen={isViewingQuestionnaires}
+        setIsOpen={setIsViewingQuestionnaires}
+      />
     </SiteWrapper>
   );
 }

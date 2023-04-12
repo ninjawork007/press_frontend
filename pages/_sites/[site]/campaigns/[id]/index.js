@@ -526,6 +526,10 @@ function MyCampaigns({ initialCampaign, role, siteData }) {
                 {campaign?.name}
               </h2>
             </div>
+            <p>
+              Campaign ID:{" "}
+              <span className="font-bold text-gray-600">{campaign?.id}</span>
+            </p>
             <p className="italic text-gray-600">
               Created:{" "}
               <span className="font-bold">

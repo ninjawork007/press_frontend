@@ -103,7 +103,7 @@ const NewsLabel = ({ news }) => {
   var status;
   if (news == "Y") {
     title = "Google News";
-    message = "Your page will show in google news results";
+    message = "Your page will show in Google news results";
     status = 0;
   } else if (news == "M") {
     title = "Google News";
