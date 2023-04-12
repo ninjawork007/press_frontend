@@ -174,25 +174,23 @@ export default function ArticleCardSidebar({
 
                       <div className="mt-4">
                         <div className="flow flex-col">
-                          {!isManager && (
-                            <>
-                              <p>
-                                At least 1 image is required before we are able
-                                to publish. These will be added to the articles.
-                                We recommend adding 3-5 images, preferably 16:9
-                                aspect ratio. Please only use images that you
-                                have rights to, otherwise you may be responsible
-                                for any fees incurred...
-                              </p>
-                              <UploadImagesArticleBox
-                                article={article}
-                                images={article?.images}
-                                isUploadingImage={isUploadingImage}
-                                uploadImage={uploadImage}
-                                deleteImage={deleteImage}
-                              />
-                            </>
-                          )}
+                          <>
+                            <p>
+                              At least 1 image is required before we are able to
+                              publish. These will be added to the articles. We
+                              recommend adding 3-5 images, preferably 16:9
+                              aspect ratio. Please only use images that you have
+                              rights to, otherwise you may be responsible for
+                              any fees incurred...
+                            </p>
+                            <UploadImagesArticleBox
+                              article={article}
+                              images={article?.images}
+                              isUploadingImage={isUploadingImage}
+                              uploadImage={uploadImage}
+                              deleteImage={deleteImage}
+                            />
+                          </>
 
                           <div className="mt-[16px]">
                             <ImageGallery

@@ -609,13 +609,13 @@ function MyCampaigns({ initialCampaign, role, siteData }) {
                         />
                       ))}
                       <h3 className="text-4xl mt-16">Images</h3>
-                      <UploadImagesBox
+                      {/* <UploadImagesBox
                         campaign={campaign}
                         images={campaign?.images}
                         isUploadingImage={isUploadingImage}
                         uploadImage={uploadImage}
                         deleteImage={deleteImage}
-                      />
+                      /> */}
                       <ImageGallery
                         images={campaign?.images}
                         deleteImage={deleteImage}

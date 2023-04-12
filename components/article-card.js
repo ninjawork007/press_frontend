@@ -214,29 +214,14 @@ export default function ArticleCard({
           <p className="capitalize font-bold text-gray-700 break-all">
             {article.name || `Article #${index + 1}`}
           </p>
-
-          {isWrittenByUser && !articleIsPublished(article.status) && (
-            <p className="text-purple-600 font-bold">
-              Written by {isManager ? "Client" : "You"}
-            </p>
-          )}
         </div>
 
         {renderStatus(article.status)}
       </div>
+
       {article.draftCount > 0 && (
         <div>
           <p className="text-gray-600">Draft #{article.draftCount}</p>
-        </div>
-      )}
-      {isManager && (
-        <div className="flex gap-2">
-          <p className="capitalize text-sm text-gray-700 break-all">
-            Article ID: <b>{article.id}</b>
-          </p>
-          <p className="capitalize text-sm text-gray-700 break-all">
-            Order Item ID: <b>{article?.purchasedPublication?.id}</b>
-          </p>
         </div>
       )}
       <p className="text-gray-600">
@@ -244,6 +229,33 @@ export default function ArticleCard({
 
         {/* {isApprovedForPublishingByUser && !isManager && `You have appproved for publishing`} */}
       </p>
+      <div className="flex gap-2">
+        {article.images?.length > 0 ? (
+          <p className="apitalize text-sm text-gray-700 break-all">
+            Photos: <b>{article.images.length}</b>
+          </p>
+        ) : (
+          <p className="apitalize text-sm break-all text-amber-500 font-bold italic">
+            Needs more images
+          </p>
+        )}
+        {isWrittenByUser && !articleIsPublished(article.status) && (
+          <p className="capitalize text-sm text-gray-700 break-all italic">
+            Written by {isManager ? "Client" : "You"}
+          </p>
+        )}
+        {isManager && (
+          <>
+            <p className="capitalize text-sm text-gray-700 break-all">
+              Article ID: <b>{article.id}</b>
+            </p>
+            <p className="capitalize text-sm text-gray-700 break-all">
+              Order Item ID: <b>{article?.purchasedPublication?.id}</b>
+            </p>
+          </>
+        )}
+      </div>
+
       <div>
         <p className="text-sm text-purple-600 font-bold">
           {isApprovedForPublishingByUser &&

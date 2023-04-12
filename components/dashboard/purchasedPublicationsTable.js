@@ -228,8 +228,7 @@ export default function PurchasedPublicationsTable({
                         </a>
                       )}
                     </div>
-                    {purchasedPublication?.article?.campaign
-                      ?.hasEnoughImages || (
+                    {purchasedPublication?.article?.images?.length > 0 || (
                       <span className="text-amber-500">Needs more images</span>
                     )}
                   </>

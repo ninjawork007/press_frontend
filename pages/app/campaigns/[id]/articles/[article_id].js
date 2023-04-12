@@ -22,6 +22,8 @@ import StatusLabel from "@/components/statusLabel";
 import DateHandler from "@/lib/date-handler";
 import ArticleCardSidebar from "@/components/article-card-sidebar";
 import { downloadURI } from "@/lib/utils/generalUtils";
+import classNames from "classnames";
+
 import {
   handleApprovalSubmit,
   submitForReview,
@@ -224,7 +226,14 @@ function Article({ initialCampaign, article, role }) {
                     Revise
                   </button>
                 )}
-                <button className="button-secondary" onClick={displaySidebar}>
+                <button
+                  className={classNames(
+                    "button-secondary",
+                    selectedArticle.images?.length > 0 ||
+                      "!border-amber-500 hover:bg-amber-500"
+                  )}
+                  onClick={displaySidebar}
+                >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
