@@ -393,7 +393,7 @@ function Example({ siteData, campaign }) {
 }
 
 export const getServerSideProps = async (context) => {
-  const { query, req, params } = context;
+  const { query, req, params, resolvedUrl } = context;
   const session = await getSession({ req });
   const { site } = params;
   // console.log("site params", site)
@@ -409,7 +409,7 @@ export const getServerSideProps = async (context) => {
     return {
       redirect: {
         permanent: false,
-        destination: "/login",
+        destination: `/login?return_url=${resolvedUrl}`,
       },
     };
   }

@@ -287,18 +287,18 @@ function Example({ siteData, campaign }) {
                   </p>
                   {purchasedPublications.length - selectedPublications.length <=
                     0 && (
-                    <p>
-                      <span className="text-gray-500">
-                        If you need more publications, you can buy additional
-                        ones&nbsp;
-                      </span>
-                      <Link href="/publications">
-                        <a className="text-indigo-800 font-bold underline">
-                          here
-                        </a>
-                      </Link>
-                    </p>
-                  )}
+                      <p>
+                        <span className="text-gray-500">
+                          If you need more publications, you can buy additional
+                          ones&nbsp;
+                        </span>
+                        <Link href="/publications">
+                          <a className="text-indigo-800 font-bold underline">
+                            here
+                          </a>
+                        </Link>
+                      </p>
+                    )}
                   <label className="flex justify-center w-full h-32 px-4 transition bg-white border-2 border-gray-300 border-dashed rounded-md appearance-none cursor-pointer hover:border-gray-400 focus:outline-none">
                     <span className="flex items-center flex-col justify-center space-y-2">
                       <div className="rounded-full bg-gray-50 p-2">
@@ -464,7 +464,7 @@ function Example({ siteData, campaign }) {
 }
 
 export const getServerSideProps = async (context) => {
-  const { query, req, params } = context;
+  const { query, req, params, resolvedUrl } = context;
   const session = await getSession({ req });
   const { site } = params;
   const { id } = query;
@@ -479,7 +479,7 @@ export const getServerSideProps = async (context) => {
     return {
       redirect: {
         permanent: false,
-        destination: "/login",
+        destination: `/login?return_url=${resolvedUrl}`,
       },
     };
   }

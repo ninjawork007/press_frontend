@@ -785,7 +785,14 @@ export const getServerSideProps = async (context) => {
       console.log(err);
       return null;
     });
-
+  if (!session) {
+    return {
+      redirect: {
+        destination: `/login?return_url=/app/campaigns/${id}`,
+        permanent: false,
+      },
+    }
+  }
   if (
     session.role !== "Manager" &&
     session.profile?.id !== initialCampaign?.profile?.id

@@ -60,6 +60,13 @@ function Example({ siteData }) {
         } else {
           router.replace("/publications");
         }
+      } else if (router?.query?.return_url) {
+        router.push({
+          pathname: router?.query?.return_url,
+          query: {
+            redirect: true
+          }
+        })
       } else if (
         session.profile.is_whitelabel ||
         session.profile.is_affiliate
