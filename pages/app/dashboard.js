@@ -284,13 +284,14 @@ function Dashboard({ role }) {
 }
 
 export const getServerSideProps = async (context) => {
+  const { resolvedUrl } = context
   const session = await getSession(context);
 
   if (!session) {
     return {
       redirect: {
         permanent: false,
-        destination: "/login",
+        destination: `/login?return_url=${resolvedUrl}`,
       },
     };
   }

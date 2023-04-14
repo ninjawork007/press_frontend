@@ -45,8 +45,11 @@ export default function middleware(req: NextRequest) {
       url.pathname = "/";
       return NextResponse.redirect(url);
     }
-
-    url.pathname = `/app${url.pathname}`;
+    if(url.search === '?redirect=true'){
+      url.pathname = `${url.pathname}`
+    } else {
+      url.pathname = `/app${url.pathname}`;
+    }
     return NextResponse.rewrite(url);
   }
 
