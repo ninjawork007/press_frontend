@@ -29,6 +29,7 @@ import {
 } from "@/lib/utils/articleUtils";
 import ApprovalModal from "@/components/approvalModal";
 import { useRouter } from "next/router";
+import classNames from "classnames";
 
 function Article({ initialCampaign, article, role, siteData }) {
   const { data: session } = useSession();
@@ -161,7 +162,14 @@ function Article({ initialCampaign, article, role, siteData }) {
                   </button>
                 )}
 
-                <button className="button-secondary" onClick={displaySidebar}>
+                <button
+                  className={classNames(
+                    "button-secondary",
+                    selectedArticle.images?.length > 0 ||
+                      "!border-amber-500 hover:bg-amber-500 !text-amber-700 hover:!text-white"
+                  )}
+                  onClick={displaySidebar}
+                >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"

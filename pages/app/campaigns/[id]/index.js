@@ -695,13 +695,13 @@ function Example({ initialCampaign, role }) {
               </div>
             </div>
             <h3 className="text-xl">Images</h3>
-            <UploadImagesBox
+            {/* <UploadImagesBox
               campaign={campaign}
               images={campaign?.images}
               isUploadingImage={isUploadingImage}
               uploadImage={uploadImage}
               deleteImage={deleteImage}
-            />
+            /> */}
             <ImageGallery images={campaign?.images} />
           </div>
 

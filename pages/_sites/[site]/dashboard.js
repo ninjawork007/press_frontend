@@ -158,13 +158,13 @@ function Example({ role, siteData }) {
                           <p className="capitalize text-gray-800">
                             {campaign.articles.length} articles
                           </p>
-                          {campaign.hasEnoughImages || (
+                          {/* {campaign.hasEnoughImages || (
                             <p className="capitalize text-amber-600 italic">
                               {isManager
                                 ? "Missing images"
                                 : "Please upload images"}
                             </p>
-                          )}
+                          )} */}
                           {isManager && (
                             <p className="text-gray-500">
                               {campaign.profile?.name}
