@@ -1,4 +1,5 @@
 import { useRouter } from "next/router";
+import { useEffect, useRef } from "react";
 import DateHandler from "@/lib/date-handler";
 import Link from "next/link";
 import StatusLabel from "@/components/statusLabel";
@@ -26,6 +27,15 @@ export default function PurchasedPublicationsTable({
   const router = useRouter();
   // console.log('Manager: ', isManager);
   // console.log(purchasedPublications)
+  const positionRef = useRef(0)
+  useEffect(() => {
+    const scrollPosition = localStorage.getItem('scrollTo')
+    positionRef.current = scrollPosition || 0
+    if (window !== undefined && scrollPosition) {
+      window.scrollTo(0, scrollPosition)
+      localStorage.removeItem('scrollTo')
+    }
+  }, [])
   return (
     <table className="min-w-full table-auto mt-4">
       <thead className="">
@@ -122,7 +132,7 @@ export default function PurchasedPublicationsTable({
       </thead>
       <tbody className="divide-y divide-gray-200 bg-white">
         {purchasedPublications.map((purchasedPublication) => (
-          <tr key={purchasedPublication.id}>
+          <tr key={purchasedPublication.id} ref={positionRef}>
             {isManager && (
               <td className="hidden py-4 px-4 text-sm text-gray-500 lg:table-cell">
                 {purchasedPublication.id}
@@ -175,13 +185,13 @@ export default function PurchasedPublicationsTable({
             {!isWhitelabelOwner && (
               <td className="hidden px-3 py-4 text-sm text-gray-500 sm:table-cell  min-w-[180px]">
                 {purchasedPublication.article &&
-                purchasedPublication.article.campaign ? (
+                  purchasedPublication.article.campaign ? (
                   <>
                     {purchasedPublication.article?.name && (
                       <p>{purchasedPublication.article?.name}</p>
                     )}
 
-                    <div className="flex gap-2">
+                    <div className="flex gap-2" onClick={() => localStorage.setItem('scrollTo', positionRef.current.offsetTop)}>
                       <Link
                         href={`/campaigns/${purchasedPublication.article?.campaign?.id}/articles/${purchasedPublication.article?.id}`}
                       >
@@ -233,7 +243,7 @@ export default function PurchasedPublicationsTable({
                     )}
                   </>
                 ) : (
-                  <>
+                  <div onClick={() => localStorage.setItem('scrollTo', positionRef.current.offsetTop)}>
                     {isManager ? (
                       <p className="text-gray-400">Not created</p>
                     ) : (
@@ -247,7 +257,7 @@ export default function PurchasedPublicationsTable({
                         </a>
                       </Link>
                     )}
-                  </>
+                  </div>
                 )}
               </td>
             )}
@@ -305,11 +315,11 @@ export default function PurchasedPublicationsTable({
                         purchasedPublication?.publication?.turnaroundTime,
                         purchasedPublication?.article?.approvalDate
                       ) && (
-                        <span className="text-amber-500 font-bold">
-                          {" "}
-                          (Overdue)
-                        </span>
-                      )}
+                          <span className="text-amber-500 font-bold">
+                            {" "}
+                            (Overdue)
+                          </span>
+                        )}
                     </>
                   ) : (
                     <>
@@ -356,7 +366,7 @@ export default function PurchasedPublicationsTable({
                           isManager
                             ? purchasedPublication?.publicationInternalCost
                             : purchasedPublication?.price -
-                                purchasedPublication?.publicationSalePrice
+                            purchasedPublication?.publicationSalePrice
                         )}
                       </p>
                       {isManager && purchasedPublication?.isPublisherPaid && (
@@ -407,7 +417,7 @@ export default function PurchasedPublicationsTable({
                         <span className="font-bold">
                           {priceFormatter.formatDefaultPrice(
                             purchasedPublication?.price -
-                              purchasedPublication?.publicationSalePrice
+                            purchasedPublication?.publicationSalePrice
                           )}
                         </span>
                       </>

@@ -59,7 +59,7 @@ function SiteOrders({ role, siteData }) {
 
   useEffect(() => {
     if (session) {
-      pageNumberRef.current = 1;
+      pageNumberRef.current = JSON.parse(localStorage.getItem('pageNumberRef')) || 1
       setPurchasedPublications([]);
       fetchPurchasedPublications();
     }
@@ -91,11 +91,13 @@ function SiteOrders({ role, siteData }) {
 
   const nextPage = () => {
     pageNumberRef.current += 1;
+    localStorage.setItem('pageNumberRef', JSON.stringify(pageNumberRef.current))
     fetchPurchasedPublications();
   };
 
   const prevPage = () => {
     pageNumberRef.current -= 1;
+    localStorage.setItem('pageNumberRef', JSON.stringify(pageNumberRef.current))
     fetchPurchasedPublications();
   };
 
