@@ -213,9 +213,7 @@ function Questionnaire({ siteData, campaign }) {
               <h2 className="text-4xl text-gray-900">Add more articles</h2>
               <div
                 className="flex items-center cursor-pointer pt-2 gap-1"
-                onClick={() => {
-                  setIsViewingQuestionnaire(true);
-                }}
+                onClick={() => downloadURI()}
               >
                 <DocumentTextIcon
                   className="h-6 w-6 text-gray-400"

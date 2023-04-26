@@ -22,6 +22,7 @@ import DocViewerModal from "@/components/docViewerModal";
 import DocViewerModalQuestionnaire from "@/components/docViewerModalQuestionnaire";
 import StatusHandler from "@/lib/status-handler";
 import MessageList from "@/components/messageList";
+import PhotoSidebar from "@/components/photo-sidebar";
 
 import StatusLabel from "@/components/statusLabel";
 import CampaignManager from "@/lib/campaignManager";
@@ -61,6 +62,7 @@ function Example({ initialCampaign, role }) {
   const [isViewingQuestionnaire, setIsViewingQuestionnaire] = useState(false);
   const [articleMessages, setArticleMessages] = useState([]);
   const [openAddArticlesOptions, setOpenAddArticlesOptions] = useState(false);
+  const [openPhotos, setOpenPhotos] = useState(false);
 
   const [messages, setMessages] = useState([]);
 
@@ -448,6 +450,12 @@ function Example({ initialCampaign, role }) {
       });
   };
 
+  const handlePhotoFlow = (article) => {
+    setIsViewingArticle(false);
+    setSelectedArticle(article);
+    setOpenPhotos(true);
+  };
+
   const checkIfEnoughImages = ({ justUploadedImage = false }) => {
     let publishedArticleCount =
       campaign?.articles.filter((article) => {
@@ -670,6 +678,7 @@ function Example({ initialCampaign, role }) {
                           setSelectedArticle(article);
                           setIsAddingGoogleDoc(true);
                         }}
+                        handlePhotoFlow={() => handlePhotoFlow(article)}
                       />
                     ))
                   ) : (
@@ -750,6 +759,26 @@ function Example({ initialCampaign, role }) {
         setIsOpen={setIsCompleting}
         isOpen={isCompleting}
       />
+      <PhotoSidebar
+        open={openPhotos}
+        setOpen={() => {
+          setOpenPhotos(false);
+          API.campaigns
+            .findOne(campaignId, session)
+            .then(function (result) {
+              if (result.data?.data) {
+                setIsUploadingImage(false);
+                let campaign = new CampaignModel(result.data?.data);
+                setCampaign(campaign);
+              }
+            })
+            .catch((err) => {
+              console.log(err);
+              return null;
+            });
+        }}
+        selectedArticle={selectedArticle}
+      />
       <DocViewerModal
         selectedArticle={selectedArticle}
         setIsOpen={setIsViewingArticle}
@@ -785,7 +814,14 @@ export const getServerSideProps = async (context) => {
       console.log(err);
       return null;
     });
-
+  if (!session) {
+    return {
+      redirect: {
+        destination: `/login?return_url=/app/campaigns/${id}`,
+        permanent: false,
+      },
+    }
+  }
   if (
     session.role !== "Manager" &&
     session.profile?.id !== initialCampaign?.profile?.id

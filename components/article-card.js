@@ -5,6 +5,7 @@ import {
   CheckCircleIcon,
   GlobeAltIcon,
   CalendarIcon,
+  PhotographIcon,
 } from "@heroicons/react/outline";
 import classNames from "classnames";
 import StatusLabel from "./statusLabel";
@@ -28,6 +29,7 @@ export default function ArticleCard({
   handleGoogleDocFlow,
   handleWritingFlow,
   campaignId,
+  handlePhotoFlow,
 }) {
   const pressTeamReviewing = (status) => status == "reviewing";
   const requiresClientAction = (status) => status == "requires-action";
@@ -59,99 +61,21 @@ export default function ArticleCard({
   };
 
   const ActionButtons = ({ draft }) => {
-    if (draft || article.googleDocUrl) {
-      return (
-        <div className="flex justify-between items-center mt-4">
-          <Link href={`/campaigns/${campaignId}/articles/${article.id}`}>
-            <a href="#" className="flex flex-row gap-1">
-              <ZoomInIcon className="h-6 w-6" aria-hidden="true" /> View
-            </a>
-          </Link>
-          {articleIsPublished(article.status) && (
-            <>
-              {/* <button className="relative whitespace-nowrap inline-flex items-center justify-center text-gray-500 hover:text-indigo-600 font-bold gap-1" onClick={() => downloadURI(draft.attributes.article.url, draft.attributes.name)}><DownloadIcon className="h-6 w-6" aria-hidden="true" /> Download</button> */}
-              {/* <button
-                className="relative whitespace-nowrap inline-flex items-center justify-center text-gray-500 hover:text-indigo-600 font-bold gap-1"
-                onClick={openArticleViewer}
-              >
-                <ZoomInIcon className="h-6 w-6" aria-hidden="true" /> View
-              </button> */}
-
-              <a href={article.url} target="_blank" rel="noreferrer">
-                <button className="relative whitespace-nowrap inline-flex items-center justify-center text-green-500 hover:text-green-600 font-bold gap-1">
-                  <ExternalLinkIcon
-                    className="h-6 w-6 text-green-600 inline"
-                    aria-hidden="true"
-                  />
-                  View Live Article
-                </button>
-              </a>
-
-              {isManager && (
-                <>
-                  <button
-                    className="relative whitespace-nowrap inline-flex items-center justify-center text-indigo-500 hover:text-indigo-600 font-bold gap-1"
-                    onClick={handleCompleteFlow}
-                  >
-                    <PencilAltIcon className="h-6 w-6" aria-hidden="true" />
-                    Update Live Url
-                  </button>
-                </>
-              )}
-            </>
-          )}
-          {/* <button className="relative whitespace-nowrap inline-flex items-center justify-center text-gray-500 hover:text-indigo-600 font-bold gap-1" onClick={() => downloadURI(draft.attributes.article.url, draft.attributes.name)}><DownloadIcon className="h-6 w-6" aria-hidden="true" /> Download</button> */}
-
-          {((requiresClientAction(article.status) && !isManager) ||
-            (pressTeamReviewing(article.status) && isManager)) && (
-            <>
-              {draft && (
-                <button
-                  className="relative whitespace-nowrap inline-flex items-center justify-center text-gray-500 hover:text-indigo-600 font-bold gap-1"
-                  onClick={handleReviseFlow}
-                >
-                  <PencilAltIcon className="h-6 w-6" aria-hidden="true" />
-                  Revise
-                </button>
-              )}
-
-              {((isManager && isApprovedForPublishingByUser) || !isManager) && (
-                <button
-                  className="relative whitespace-nowrap inline-flex items-center justify-center text-indigo-600 hover:text-indigo-800 font-bold gap-1"
-                  id={article.id}
-                  onClick={handleApproveFlow}
-                >
-                  <CheckCircleIcon className="h-6 w-6" aria-hidden="true" />
-                  {isManager ? "Sent to publishing" : "Publish"}
-                </button>
-              )}
-            </>
-          )}
-
-          {awaitingPublishing(article.status) && isManager && (
-            <>
-              <button
-                className="relative whitespace-nowrap inline-flex items-center justify-center text-green-500 hover:text-green-600 font-bold gap-1"
-                onClick={handleCompleteFlow}
-              >
-                <CheckCircleIcon className="h-6 w-6" aria-hidden="true" />
-                Complete
-              </button>
-            </>
-          )}
-        </div>
-      );
-    } else if (isManager) {
-      return (
-        <div className="flex justify-between items-center mt-4">
-          {/* <button
-            className="relative whitespace-nowrap inline-flex items-center justify-center text-gray-500 hover:text-indigo-600 font-bold gap-1"
-            onClick={handleReviseFlow}
-          >
-            <PencilAltIcon className="h-6 w-6" aria-hidden="true" />
-            Upload draft
-          </button> */}
-
+    return (
+      <div className="flex justify-between items-center mt-4">
+        <Link href={`/campaigns/${campaignId}/articles/${article.id}`}>
+          <a href="#" className="flex flex-row gap-1">
+            <ZoomInIcon className="h-6 w-6" aria-hidden="true" /> View
+          </a>
+        </Link>
+        <button
+          className="relative whitespace-nowrap inline-flex items-center justify-center text-gray-500 hover:text-indigo-600 font-bold gap-1"
+          onClick={handlePhotoFlow}
+        >
+          <PhotographIcon className="h-6 w-6" aria-hidden="true" />
+          Photos
+        </button>
+        {isManager && !draft && !article.googleDocUrl && (
           <button
             className="relative whitespace-nowrap inline-flex items-center justify-center text-gray-500 hover:text-indigo-600 font-bold gap-1"
             onClick={handleGoogleDocFlow}
@@ -159,33 +83,98 @@ export default function ArticleCard({
             <PencilAltIcon className="h-6 w-6" aria-hidden="true" />
             Upload Google Doc
           </button>
-          {!article.isWriting && !draft ? (
+        )}
+        {isManager && !article.isWriting && !draft && (
+          <button
+            className="relative whitespace-nowrap inline-flex items-center justify-center text-indigo-600 hover:text-indigo-800 font-bold gap-1"
+            id={article.id}
+            onClick={handleWritingFlow}
+          >
+            <CheckCircleIcon className="h-6 w-6" aria-hidden="true" />
+            Sent to writing
+          </button>
+        )}
+
+        {article.isWriting && (
+          <p className="text-indigo-600 hover:text-indigo-800 font-bold italic">
+            Writing in Progress
+          </p>
+        )}
+
+        {articleIsPublished(article.status) && (
+          <>
+            {/* <button className="relative whitespace-nowrap inline-flex items-center justify-center text-gray-500 hover:text-indigo-600 font-bold gap-1" onClick={() => downloadURI(draft.attributes.article.url, draft.attributes.name)}><DownloadIcon className="h-6 w-6" aria-hidden="true" /> Download</button> */}
+            {/* <button
+                className="relative whitespace-nowrap inline-flex items-center justify-center text-gray-500 hover:text-indigo-600 font-bold gap-1"
+                onClick={openArticleViewer}
+              >
+                <ZoomInIcon className="h-6 w-6" aria-hidden="true" /> View
+              </button> */}
+
+            <a href={article.url} target="_blank" rel="noreferrer">
+              <button className="relative whitespace-nowrap inline-flex items-center justify-center text-green-500 hover:text-green-600 font-bold gap-1">
+                <ExternalLinkIcon
+                  className="h-6 w-6 text-green-600 inline"
+                  aria-hidden="true"
+                />
+                View Live Article
+              </button>
+            </a>
+
+            {isManager && (
+              <>
+                <button
+                  className="relative whitespace-nowrap inline-flex items-center justify-center text-indigo-500 hover:text-indigo-600 font-bold gap-1"
+                  onClick={handleCompleteFlow}
+                >
+                  <PencilAltIcon className="h-6 w-6" aria-hidden="true" />
+                  Update Live Url
+                </button>
+              </>
+            )}
+          </>
+        )}
+        {/* <button className="relative whitespace-nowrap inline-flex items-center justify-center text-gray-500 hover:text-indigo-600 font-bold gap-1" onClick={() => downloadURI(draft.attributes.article.url, draft.attributes.name)}><DownloadIcon className="h-6 w-6" aria-hidden="true" /> Download</button> */}
+
+        {((requiresClientAction(article.status) && !isManager) ||
+          (pressTeamReviewing(article.status) && isManager)) && (
+          <>
+            {draft && (
+              <button
+                className="relative whitespace-nowrap inline-flex items-center justify-center text-gray-500 hover:text-indigo-600 font-bold gap-1"
+                onClick={handleReviseFlow}
+              >
+                <PencilAltIcon className="h-6 w-6" aria-hidden="true" />
+                Revise
+              </button>
+            )}
+
+            {((isManager && isApprovedForPublishingByUser) || !isManager) && (
+              <button
+                className="relative whitespace-nowrap inline-flex items-center justify-center text-indigo-600 hover:text-indigo-800 font-bold gap-1"
+                id={article.id}
+                onClick={handleApproveFlow}
+              >
+                <CheckCircleIcon className="h-6 w-6" aria-hidden="true" />
+                {isManager ? "Sent to publishing" : "Publish"}
+              </button>
+            )}
+          </>
+        )}
+
+        {awaitingPublishing(article.status) && isManager && (
+          <>
             <button
-              className="relative whitespace-nowrap inline-flex items-center justify-center text-indigo-600 hover:text-indigo-800 font-bold gap-1"
-              id={article.id}
-              onClick={handleWritingFlow}
+              className="relative whitespace-nowrap inline-flex items-center justify-center text-green-500 hover:text-green-600 font-bold gap-1"
+              onClick={handleCompleteFlow}
             >
               <CheckCircleIcon className="h-6 w-6" aria-hidden="true" />
-              Sent to writing
+              Complete
             </button>
-          ) : (
-            <p className="text-indigo-600 hover:text-indigo-800 font-bold italic">
-              Writing in Progress
-            </p>
-          )}
-        </div>
-      );
-    } else {
-      return (
-        <div className="flex justify-between items-center mt-4">
-          {article.isWriting && (
-            <p className="text-indigo-600 hover:text-indigo-800 font-bold italic">
-              Writing in Progress
-            </p>
-          )}
-        </div>
-      );
-    }
+          </>
+        )}
+      </div>
+    );
   };
 
   useEffect(() => {
@@ -276,7 +265,7 @@ export default function ArticleCard({
               <>
                 {isManager ? (
                   <>
-                    {DateHandler.calculateEarliestDueDate(
+                    {DateHandler.calculateDueDateRange(
                       purchasedPublication?.publication?.turnaroundTime,
                       article?.approvalDate
                     )}

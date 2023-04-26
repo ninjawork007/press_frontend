@@ -99,8 +99,8 @@ function Example({ role, site }) {
 
     const headers = csvRows[0]
       ? Object.keys(csvRows[0]).map((key) => {
-          return { label: key, key: key };
-        })
+        return { label: key, key: key };
+      })
       : [];
     const csvData = {
       data: csvRows,
@@ -354,10 +354,10 @@ function Example({ role, site }) {
                       isWhitelabelOwner={session?.profile?.is_whitelabel}
                       handleCompleteAccounting={handleCompleteAccounting}
                       handleCancel={handleCancel}
-                      // handleUserClick={() => {
-                      //   setSelectedUser(profile);
-                      //   setIsUserDetailSlideoverOpen(true);
-                      // }}
+                    // handleUserClick={() => {
+                    //   setSelectedUser(profile);
+                    //   setIsUserDetailSlideoverOpen(true);
+                    // }}
                     />
                   </div>
 
@@ -434,7 +434,7 @@ export const getServerSideProps = async (context) => {
     return {
       redirect: {
         permanent: false,
-        destination: "/login",
+        destination: `/login?return_url=${context.resolvedUrl}`,
       },
     };
   }

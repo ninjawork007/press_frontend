@@ -60,6 +60,13 @@ function Example({ siteData }) {
         } else {
           router.replace("/publications");
         }
+      } else if (router?.query?.return_url) {
+        const pathname = router?.query?.return_url.split('?')[0] ?? ''
+        const query = router?.query?.return_url.split('?')[1] ?? ''
+        router.replace({
+          pathname,
+          query
+        })
       } else {
         router.replace("/dashboard");
       }

@@ -402,13 +402,13 @@ const IndexPage = ({ site, publication_categories, profile }) => {
   );
 };
 
-export const getServerSideProps = async ({ req, query }) => {
+export const getServerSideProps = async ({ req, query, resolvedUrl }) => {
   const session = await getSession({ req });
   if (!session) {
     return {
       redirect: {
         permanent: false,
-        destination: "/login",
+        destination: `/login?return_url=${resolvedUrl}`,
       },
     };
   }

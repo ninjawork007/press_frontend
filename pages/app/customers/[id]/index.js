@@ -149,10 +149,8 @@ const Customer = ({ role, site }) => {
     );
 
     window.confirm(
-      `Are you sure you want to cancel ${
-        purchasedPublication.publication.name
-      } for ${purchasedPublication.profile.name}? They will be credited back $${
-        purchasedPublication.price * 1.03
+      `Are you sure you want to cancel ${purchasedPublication.publication.name
+      } for ${purchasedPublication.profile.name}? They will be credited back $${purchasedPublication.price * 1.03
       } (Including the 3% Stripe Fee).`
     );
 
@@ -283,8 +281,8 @@ const Customer = ({ role, site }) => {
                     isManager={isManager}
                     isWhitelabelOwner={session?.profile?.is_whitelabel}
                     handleCancel={handleCancel}
-                    // handleCompleteAccounting={handleCompleteAccounting}
-                    // handleCancel={handleCancel}
+                  // handleCompleteAccounting={handleCompleteAccounting}
+                  // handleCancel={handleCancel}
                   />
                 </div>
 
@@ -350,7 +348,7 @@ export const getServerSideProps = async (context) => {
     return {
       redirect: {
         permanent: false,
-        destination: "/login",
+        destination: `/login?return_url=${context.resolvedUrl}`,
       },
     };
   }

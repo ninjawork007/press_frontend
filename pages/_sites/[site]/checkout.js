@@ -287,7 +287,7 @@ export const getServerSideProps = async (context) => {
   if (!session) {
     return {
       redirect: {
-        destination: "/",
+        destination: `/login?return_url=/checkout?order_id=${context.query.order_id}`,
         permanent: false,
       },
     };

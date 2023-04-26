@@ -384,18 +384,18 @@ function Example({ purchasedPublications, siteData }) {
                 </p>
                 {purchasedPublications.length - selectedPublications.length <=
                   0 && (
-                  <p>
-                    <span className="text-gray-500">
-                      If you need more publications, you can buy additional
-                      ones&nbsp;
-                    </span>
-                    <Link href="/publications">
-                      <a className="text-indigo-800 font-bold underline">
-                        here
-                      </a>
-                    </Link>
-                  </p>
-                )}
+                    <p>
+                      <span className="text-gray-500">
+                        If you need more publications, you can buy additional
+                        ones&nbsp;
+                      </span>
+                      <Link href="/publications">
+                        <a className="text-indigo-800 font-bold underline">
+                          here
+                        </a>
+                      </Link>
+                    </p>
+                  )}
 
                 <div className="relative flex items-start mt-4">
                   <div className="flex items-center h-5">
@@ -475,7 +475,7 @@ export const getServerSideProps = async (context) => {
     return {
       redirect: {
         permanent: false,
-        destination: "/login",
+        destination: "/login?return_url=/campaigns/upload-articles",
       },
     };
   }

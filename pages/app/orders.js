@@ -207,10 +207,8 @@ function Example({ role, site }) {
     );
 
     window.confirm(
-      `Are you sure you want to cancel ${
-        purchasedPublication.publication.name
-      } for ${purchasedPublication.profile.name}? They will be credited back $${
-        purchasedPublication.price * 1.03
+      `Are you sure you want to cancel ${purchasedPublication.publication.name
+      } for ${purchasedPublication.profile.name}? They will be credited back $${purchasedPublication.price * 1.03
       } (Including the 3% Stripe Fee).`
     );
 
@@ -304,10 +302,10 @@ function Example({ role, site }) {
                       handlePaidReseller={handlePaidReseller}
                       handlePaidPublisher={handlePaidPublisher}
                       handleCancel={handleCancel}
-                      // handleUserClick={() => {
-                      //   setSelectedUser(profile);
-                      //   setIsUserDetailSlideoverOpen(true);
-                      // }}
+                    // handleUserClick={() => {
+                    //   setSelectedUser(profile);
+                    //   setIsUserDetailSlideoverOpen(true);
+                    // }}
                     />
                   </div>
 
@@ -386,7 +384,7 @@ export const getServerSideProps = async (context) => {
     return {
       redirect: {
         permanent: false,
-        destination: "/login",
+        destination: `/login?return_url=${context.resolvedUrl}`,
       },
     };
   }

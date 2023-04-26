@@ -289,8 +289,17 @@ function OrderConfirmation({ siteData }) {
 export const getServerSideProps = async (context) => {
   const { params } = context;
   const { site } = params;
+  const session = await getSession(context);
 
   let siteData;
+  if (!session) {
+    return {
+      redirect: {
+        destination: `/login?return_url=/confirmation`,
+        permanent: false,
+      },
+    };
+  }
   if (site.includes(".")) {
     siteData = await API.sites.get({ customDomain: site });
   } else {

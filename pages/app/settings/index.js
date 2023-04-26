@@ -332,11 +332,10 @@ function Example({ site }) {
                 <div
                   className="h-5 w-5 rounded-full pointer-events-none absolute inset-y-0 right-2 top-0 bottom-0 my-auto flex items-center pr-3 z-100"
                   style={{
-                    backgroundColor: `#${
-                      form.primary_color ||
+                    backgroundColor: `#${form.primary_color ||
                       site?.attributes?.primary_color ||
                       "#000000"
-                    }`,
+                      }`,
                   }}
                 ></div>
               </div>
@@ -361,11 +360,10 @@ function Example({ site }) {
                 <div
                   className="h-5 w-5 rounded-full pointer-events-none absolute inset-y-0 right-2 top-0 bottom-0 my-auto flex items-center pr-3 z-100"
                   style={{
-                    backgroundColor: `#${
-                      form.secondary_color ||
+                    backgroundColor: `#${form.secondary_color ||
                       site?.attributes?.secondary_color ||
                       "#000000"
-                    }`,
+                      }`,
                   }}
                 ></div>
               </div>
@@ -442,13 +440,13 @@ function Example({ site }) {
   );
 }
 
-export const getServerSideProps = async ({ req }) => {
+export const getServerSideProps = async ({ req, resolvedUrl }) => {
   const session = await getSession({ req });
   if (!session) {
     return {
       redirect: {
         permanent: false,
-        destination: "/login",
+        destination: `/login?return_url=${resolvedUrl}`,
       },
     };
   }

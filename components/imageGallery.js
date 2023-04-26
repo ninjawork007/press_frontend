@@ -1,28 +1,24 @@
 import { TrashIcon, DownloadIcon } from "@heroicons/react/outline";
-import { saveAs } from 'file-saver'
+import { saveAs } from "file-saver";
+import { downloadURI } from "@/lib/utils/generalUtils";
 
 export default function ImageGallery({ images, deleteImage, isManager }) {
-  const downloadURI = async (uri, name) => {
-    try {
-      const headers = new Headers();
-      headers.append('Content-Disposition', 'attachment');
+  // const downloadURI = async (uri, name) => {
+  //  try {
+  //    const headers = new Headers();
+  //    headers.append('Content-Disposition', 'attachment');
+  //    headers.append('Acess-Control-Allow-Origin', 'opaque')
 
+  //     if (!response.ok) {
+  //       throw new Error(response);
+  //     }
 
-      const response = await fetch(uri, {
-        headers
-      });
-
-      if (!response.ok) {
-        throw new Error(response);
-      }
-
-      const blob = await response.blob();
-      saveAs(blob, name);
-
-    } catch (error) {
-      console.error('Failed to download file', error);
-    }
-  };
+  //     const blob = await response.blob();
+  //     saveAs(blob, name);
+  //   } catch (error) {
+  //     console.error("Failed to download file", error);
+  //   }
+  // };
 
   return (
     <div className="">

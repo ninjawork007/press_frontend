@@ -25,6 +25,7 @@ import ImageGallery from "@/components/imageGallery";
 import Modal from "@/components/modal";
 import CampaignModel from "@/lib/models/campaign-model";
 import DropdownOptions from "@/components/campaign/dropdownOptions";
+import PhotoSidebar from "@/components/photo-sidebar";
 import { sentToPublishing } from "@/lib/utils/articleUtils";
 function MyCampaigns({ initialCampaign, role, siteData }) {
   const router = useRouter();
@@ -51,6 +52,7 @@ function MyCampaigns({ initialCampaign, role, siteData }) {
   const [articleMessages, setArticleMessages] = useState([]);
   const [openAddArticlesOptions, setOpenAddArticlesOptions] = useState(false);
   const [messages, setMessages] = useState([]);
+  const [openPhotos, setOpenPhotos] = useState(false);
 
   const feedbackRef = useRef(null);
   const approvedForPublishingRef = useRef(null);
@@ -437,6 +439,12 @@ function MyCampaigns({ initialCampaign, role, siteData }) {
     openApproval();
   };
 
+  const handlePhotoFlow = (article) => {
+    setIsViewingArticle(false);
+    setSelectedArticle(article);
+    setOpenPhotos(true);
+  };
+
   const handleArticleStatus = () => {
     if (isManager) {
       return;
@@ -606,20 +614,26 @@ function MyCampaigns({ initialCampaign, role, siteData }) {
                             setSelectedArticle(article);
                             setIsViewingArticle(true);
                           }}
+                          handlePhotoFlow={() => handlePhotoFlow(article)}
                         />
                       ))}
-                      <h3 className="text-4xl mt-16">Images</h3>
-                      {/* <UploadImagesBox
-                        campaign={campaign}
-                        images={campaign?.images}
-                        isUploadingImage={isUploadingImage}
-                        uploadImage={uploadImage}
-                        deleteImage={deleteImage}
-                      /> */}
-                      <ImageGallery
-                        images={campaign?.images}
-                        deleteImage={deleteImage}
-                      />
+
+                      {campaign?.images?.length > 0 && (
+                        <>
+                          <h3 className="text-4xl mt-16">Images</h3>
+                          {/* <UploadImagesBox
+                                campaign={campaign}
+                                images={campaign?.images}
+                                isUploadingImage={isUploadingImage}
+                                uploadImage={uploadImage}
+                                deleteImage={deleteImage}
+                              /> */}
+                          <ImageGallery
+                            images={campaign?.images}
+                            deleteImage={deleteImage}
+                          />
+                        </>
+                      )}
                     </>
                   ) : (
                     <AddArticlesOptions />
@@ -683,6 +697,27 @@ function MyCampaigns({ initialCampaign, role, siteData }) {
         setIsOpen={setIsViewingQuestionnaire}
         isOpen={isViewingQuestionnaire}
       />
+      <PhotoSidebar
+        open={openPhotos}
+        setOpen={() => {
+          setOpenPhotos(false);
+          API.campaigns
+            .findOne(campaignId, session)
+            .then(function (result) {
+              if (result.data?.data) {
+                setIsUploadingImage(false);
+                let campaign = new CampaignModel(result.data?.data);
+                setCampaign(campaign);
+              }
+            })
+            .catch((err) => {
+              console.log(err);
+              return null;
+            });
+        }}
+        selectedArticle={selectedArticle}
+        site_id={siteData?.id}
+      />
       <ApprovalModal
         confirmAction={handleApprovalSubmit}
         setIsOpen={setIsApproving}
@@ -697,8 +732,19 @@ export const getServerSideProps = async (context) => {
   const { query, req, params } = context;
   const { id } = query;
   const session = await getSession({ req });
+
+  if (!session) {
+    return {
+      redirect: {
+        destination: `/login?return_url=/campaigns/${id}`,
+        permanent: false,
+      },
+    };
+  }
+
   const { site } = params;
   // console.log("site params", site)
+
   let siteData;
   if (site.includes(".")) {
     siteData = await API.sites.get({ customDomain: site });
@@ -719,7 +765,7 @@ export const getServerSideProps = async (context) => {
     });
 
   //TODO: ENABLE THIS WHEN TESTING IS OVER
-  if (session.profile?.id !== initialCampaign?.profile?.id) {
+  if (session?.profile?.id !== initialCampaign?.profile?.id) {
     return {
       redirect: {
         destination: "/dashboard",

@@ -12,7 +12,7 @@ import UploadImagesArticleBox from "@/components/article/uploadImagesArticleBox"
 import ArticleModel from "@/lib/models/article-model";
 import ImageGallery from "@/components/imageGallery";
 
-export default function ArticleCardSidebar({
+export default function PhotoSidebar({
   open,
   setOpen,
   selectedArticle,
@@ -27,7 +27,11 @@ export default function ArticleCardSidebar({
 
   const router = useRouter();
 
-  const [article, setArticle] = useState(selectedArticle[0]);
+  const [article, setArticle] = useState(selectedArticle);
+
+  useEffect(() => {
+    setArticle(selectedArticle);
+  }, [selectedArticle]);
 
   const uploadImage = async (e) => {
     console.log("uploadImage...", e);

@@ -252,8 +252,8 @@ const IndexPage = ({ site, publication_categories }) => {
     });
     const headers = csvRows[0]
       ? Object.keys(csvRows[0]).map((key) => {
-          return { label: key, key: key };
-        })
+        return { label: key, key: key };
+      })
       : [];
     const csvData = {
       data: csvRows,
@@ -446,13 +446,13 @@ const IndexPage = ({ site, publication_categories }) => {
   );
 };
 
-export const getServerSideProps = async ({ req }) => {
+export const getServerSideProps = async ({ req, resolvedUrl }) => {
   const session = await getSession({ req });
   if (!session) {
     return {
       redirect: {
         permanent: false,
-        destination: "/login",
+        destination: `/login?return_url=${resolvedUrl}`,
       },
     };
   }

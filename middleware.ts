@@ -28,12 +28,12 @@ export default function middleware(req: NextRequest) {
   const currentHost =
     process.env.NODE_ENV === "production" && process.env.VERCEL === "1"
       ? hostname
-          .replace(`.pressbackend.com`, "")
-          .replace(`.press-backend.vercel.app`, "")
-          .replace(`.staging`, "")
+        .replace(`.pressbackend.com`, "")
+        .replace(`.press-backend.vercel.app`, "")
+        .replace(`.staging`, "")
       : hostname
-          .replace(`.localhost:3000`, "")
-          .replace(`.staging.pressbackend.com`, "");
+        .replace(`.localhost:3000`, "")
+        .replace(`.staging.pressbackend.com`, "");
 
   // rewrites for app pages
   if (currentHost == "app") {
@@ -45,20 +45,23 @@ export default function middleware(req: NextRequest) {
       url.pathname = "/";
       return NextResponse.redirect(url);
     }
-
-    url.pathname = `/app${url.pathname}`;
+    if (url.search === '?redirect=true') {
+      url.pathname = `${url.pathname}`
+    } else {
+      url.pathname = `/app${url.pathname}`;
+    }
     return NextResponse.rewrite(url);
   }
 
   // rewrite root application to `/home` folder
-  if (
-    hostname === "localhost:3000" ||
-    hostname === "press-backend.vercel.app" ||
-    hostname === "staging.pressbackend.com"
-  ) {
-    url.pathname = `/home${url.pathname}`;
-    return NextResponse.rewrite(url);
-  }
+  // if (
+  //   hostname === "localhost:3000" ||
+  //   hostname === "press-backend.vercel.app" ||
+  //   hostname === "staging.pressbackend.com"
+  // ) {
+  //   url.pathname = `/home${url.pathname}`;
+  //   return NextResponse.rewrite(url);
+  // }
 
   // rewrite everything else to `/_sites/[site] dynamic route
 

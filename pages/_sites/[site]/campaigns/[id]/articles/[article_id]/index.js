@@ -18,7 +18,7 @@ import SiteWrapper from "@/components/siteWrapper";
 import CampaignModel from "@/lib/models/campaign-model";
 import StatusLabel from "@/components/statusLabel";
 import DateHandler from "@/lib/date-handler";
-import ArticleCardSidebar from "@/components/article-card-sidebar";
+import PhotoSidebar from "@/components/photo-sidebar";
 import { downloadURI } from "@/lib/utils/generalUtils";
 import {
   handleApprovalSubmit,
@@ -26,6 +26,7 @@ import {
   requiresClientAction,
   articleIsPublished,
   renderStatus,
+  DocumentViewer,
 } from "@/lib/utils/articleUtils";
 import ApprovalModal from "@/components/approvalModal";
 import { useRouter } from "next/router";
@@ -36,7 +37,7 @@ function Article({ initialCampaign, article, role, siteData }) {
   const [campaign, setCampaign] = useState(initialCampaign);
   const [selectedArticle, setSelectedArticle] = useState(article[0]);
   const [selectedDraft, setSelectedDraft] = useState();
-  const [openCart, setOpenCart] = useState(false);
+  const [openPhotos, setOpenPhotos] = useState(false);
   const [list, updateList] = useState([]);
   const [isApproving, setIsApproving] = useState(false);
   const router = useRouter();
@@ -71,13 +72,13 @@ function Article({ initialCampaign, article, role, siteData }) {
 
     const documents = [...drafts, ...revisions];
 
-    setSelectedDraft(
-      documents[documents.length > 0 ? documents.length - 1 : 0]
-    );
+    const mostRecentDocument =
+      documents[documents.length > 0 ? documents.length - 1 : 0];
+    setSelectedDraft(mostRecentDocument);
   }, [selectedArticle]);
 
   const displaySidebar = () => {
-    setOpenCart(true);
+    setOpenPhotos(true);
   };
 
   const isManager = role === "Manager";
@@ -113,10 +114,10 @@ function Article({ initialCampaign, article, role, siteData }) {
 
   return (
     <SiteWrapper siteData={siteData}>
-      <ArticleCardSidebar
-        open={openCart}
-        setOpen={setOpenCart}
-        selectedArticle={article}
+      <PhotoSidebar
+        open={openPhotos}
+        setOpen={setOpenPhotos}
+        selectedArticle={selectedArticle}
         site_id={siteData?.id}
       />
       <div className="min-h-full py-12 px-4 sm:px-6 lg:px-8 h-full max-w-7xl mx-auto">
@@ -229,10 +230,12 @@ function Article({ initialCampaign, article, role, siteData }) {
           </div>
 
           <div className="flex flex-row items-center gap-4 border-b border-gray-200 pb-4 mb-4 flex-wrap">
-            {selectedArticle.draftCount > 0 && (
+            {selectedArticle.draftCount > 0 ? (
               <p className="text-gray-600">
                 Draft #{selectedArticle.draftCount}
               </p>
+            ) : (
+              <p className="text-amber-600 italic font-bold">Drafting</p>
             )}
             <p className="text-primary font-bold">
               {selectedArticle?.purchasedPublication?.publication?.name}
@@ -310,17 +313,9 @@ function Article({ initialCampaign, article, role, siteData }) {
         </div>
 
         <div className="flex flex-col border-t border-gray-200 pt-4">
-          <iframe
-            id="msdoc-iframe"
-            title="msdoc-iframe"
-            className="max-w-full aspect-auto h-[680px] w-[1216px]"
-            src={
-              selectedArticle?.googleDocUrl ||
-              `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(
-                selectedDraft?.attributes?.url
-              )}`
-            }
-            frameBorder="0"
+          <DocumentViewer
+            selectedArticle={selectedArticle}
+            selectedDraft={selectedDraft}
           />
         </div>
         <ApprovalModal
@@ -335,8 +330,18 @@ function Article({ initialCampaign, article, role, siteData }) {
 
 export const getServerSideProps = async (context) => {
   const { query, req, params } = context;
-  const { id } = query;
+  const { id, article_id } = query;
   const session = await getSession({ req });
+
+  if (!session) {
+    return {
+      redirect: {
+        destination: `/login?return_url=/campaigns/${id}/articles/${article_id}`,
+        permanent: false,
+      },
+    };
+  }
+
   const { site } = params;
   let siteData;
 

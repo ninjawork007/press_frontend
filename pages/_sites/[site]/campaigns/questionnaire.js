@@ -392,7 +392,7 @@ export const getServerSideProps = async (context) => {
     return {
       redirect: {
         permanent: false,
-        destination: "/login",
+        destination: "/login?return_url=/campaigns/questionnaire",
       },
     };
   }

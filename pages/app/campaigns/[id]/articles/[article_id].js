@@ -20,7 +20,7 @@ import Navbar from "@/components/navbar";
 import CampaignModel from "@/lib/models/campaign-model";
 import StatusLabel from "@/components/statusLabel";
 import DateHandler from "@/lib/date-handler";
-import ArticleCardSidebar from "@/components/article-card-sidebar";
+import PhotoSidebar from "@/components/photo-sidebar";
 import { downloadURI } from "@/lib/utils/generalUtils";
 import classNames from "classnames";
 
@@ -34,6 +34,7 @@ import {
   awaitingPublishing,
   completeArticle,
   pressTeamReviewing,
+  DocumentViewer,
 } from "@/lib/utils/articleUtils";
 import CompleteModal from "@/components/completeModal";
 import { useRouter } from "next/router";
@@ -171,10 +172,10 @@ function Article({ initialCampaign, article, role }) {
   return (
     <>
       <Navbar isManager={true} />
-      <ArticleCardSidebar
+      <PhotoSidebar
         open={openCart}
         setOpen={setOpenCart}
-        selectedArticle={article}
+        selectedArticle={selectedArticle}
         isManager={isManager}
       />
 
@@ -388,17 +389,9 @@ function Article({ initialCampaign, article, role }) {
           </div>
         </div>
         <div className="flex flex-col">
-          <iframe
-            id="msdoc-iframe"
-            title="msdoc-iframe"
-            className="max-w-full aspect-auto h-[680px] w-[1216px]"
-            src={
-              selectedArticle?.googleDocUrl ||
-              `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(
-                selectedDraft?.attributes?.url
-              )}`
-            }
-            frameBorder="0"
+          <DocumentViewer
+            selectedArticle={selectedArticle}
+            selectedDraft={selectedDraft}
           />
         </div>
       </div>
@@ -427,8 +420,17 @@ function Article({ initialCampaign, article, role }) {
 
 export const getServerSideProps = async (context) => {
   const { query, req, params } = context;
-  const { id } = query;
+  const { id, article_id } = query;
   const session = await getSession({ req });
+
+  if (!session) {
+    return {
+      redirect: {
+        destination: `/login?return_url=/app/campaigns/${id}/articles/${article_id}`,
+        permanent: false,
+      },
+    };
+  }
 
   let initialCampaign = await API.campaigns
     .findOne(id, session)

@@ -241,13 +241,13 @@ function Example() {
   );
 }
 
-export const getServerSideProps = async ({ req }) => {
+export const getServerSideProps = async ({ req, resolvedUrl }) => {
   const session = await getSession({ req });
   if (!session) {
     return {
       redirect: {
         permanent: false,
-        destination: "/login",
+        destination: `/login?return_url=${resolvedUrl}`,
       },
     };
   }
