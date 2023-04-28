@@ -191,7 +191,9 @@ export default function PurchasedPublicationsTable({
                       <p>{purchasedPublication.article?.name}</p>
                     )}
 
-                    <div className="flex gap-2" onClick={() => localStorage.setItem('scrollTo', positionRef.current.offsetTop)}>
+                    <div className="flex gap-2" onClick={() => {
+                      localStorage.setItem('scrollTo', positionRef.current.offsetTop ?? 0)
+                    }}>
                       <Link
                         href={`/campaigns/${purchasedPublication.article?.campaign?.id}/articles/${purchasedPublication.article?.id}`}
                       >

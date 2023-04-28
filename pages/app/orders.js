@@ -98,7 +98,12 @@ function Example({ role, site }) {
       }
     }
   }, [router.query.status]);
-
+  useEffect(() => {
+    if (window !== undefined) {
+      const tabFromLocalStorage = JSON.parse(localStorage.getItem('tab'))
+      tabFromLocalStorage && setSelectedTab(tabFromLocalStorage)
+    }
+  }, [])
   useEffect(() => {
     if (session) {
       pageNumberRef.current = JSON.parse(localStorage.getItem('pageNumberRef')) || 1
@@ -246,7 +251,10 @@ function Example({ role, site }) {
     pageNumberRef.current = 1;
     setSearchQuery(query);
   };
-
+  const handleTabClick = (tab) => {
+    setSelectedTab(tab)
+    localStorage.removeItem('pageNumberRef')
+  }
   return (
     <>
       {/*
@@ -272,7 +280,7 @@ function Example({ role, site }) {
             <ScrollableTabs
               tabs={tabs}
               selectedTab={selectedTab}
-              handleTabClick={(tab) => setSelectedTab(tab)}
+              handleTabClick={handleTabClick}
             />
 
             <div className="relative mt-1 shadow-sm border border-[#D9D4FF] rounded-full bg-white  focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:max-wnone max-w-sm">

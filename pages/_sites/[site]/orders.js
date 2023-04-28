@@ -64,6 +64,12 @@ function SiteOrders({ role, siteData }) {
       fetchPurchasedPublications();
     }
   }, [session, selectedTab]);
+  useEffect(() => {
+    if (window !== undefined) {
+      const tabFromLocalStorage = JSON.parse(localStorage.getItem('tab'))
+      tabFromLocalStorage && setSelectedTab(tabFromLocalStorage)
+    }
+  }, [])
 
   const fetchPurchasedPublications = async () => {
     setIsLoading(true);
@@ -100,7 +106,10 @@ function SiteOrders({ role, siteData }) {
     localStorage.setItem('pageNumberRef', JSON.stringify(pageNumberRef.current))
     fetchPurchasedPublications();
   };
-
+  const handleTabClick = (tab) => {
+    setSelectedTab(tab)
+    localStorage.removeItem('pageNumberRef')
+  }
   return (
     <SiteWrapper siteData={siteData}>
       {/*
@@ -126,7 +135,7 @@ function SiteOrders({ role, siteData }) {
             <ScrollableTabs
               tabs={tabs}
               selectedTab={selectedTab}
-              handleTabClick={(tab) => setSelectedTab(tab)}
+              handleTabClick={handleTabClick}
             />
 
             <div className="w-full flex flex-col gap-2">
