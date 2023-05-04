@@ -22,12 +22,12 @@ function Example({ role, siteData }) {
   const [campaigns, setCampaigns] = useState([]);
   const [paginationData, setPaginationData] = useState({});
   const [searchQuery, setSearchQuery] = useState("");
-  const pageNumberRef = useRef(1);
+  const pageNumberRef = useRef(0);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (session) {
-      pageNumberRef.current = 1;
+      pageNumberRef.current = 0;
       setCampaigns([]);
       fetchCampaigns();
     }
@@ -67,7 +67,7 @@ function Example({ role, siteData }) {
     e.preventDefault();
     let query = e.target.value;
 
-    pageNumberRef.current = 1;
+    pageNumberRef.current = 0;
     setSearchQuery(query);
   };
 
@@ -156,7 +156,7 @@ function Example({ role, siteData }) {
                             {campaign.name}
                           </p>
                           <p className="capitalize text-gray-800">
-                            {campaign.articles.length} articles
+                            {campaign?.articles?.length ?? 0} articles
                           </p>
                           {/* {campaign.hasEnoughImages || (
                             <p className="capitalize text-amber-600 italic">
@@ -199,9 +199,9 @@ function Example({ role, siteData }) {
                         onClick={prevPage}
                         className={classNames(
                           "relative inline-flex items-center pl-3 rounded-full py-2 border border-gray-300 text-sm font-medium text-gray-700 hover:bg-gray-50",
-                          paginationData.page > 1 ? "opacity-100" : "opacity-30"
+                          paginationData?.page > 0 ? "opacity-100" : "opacity-30"
                         )}
-                        disabled={paginationData.page <= 1}
+                        disabled={paginationData?.page < 0}
                       >
                         <ArrowNarrowLeftIcon
                           className="mr-3 h-5 w-5 text-gray-400"
@@ -211,12 +211,12 @@ function Example({ role, siteData }) {
                     </div>{" "}
                     <p className="text-sm text-center text-gray-700">
                       <span className="font-medium">
-                        {paginationData.pageSize * (paginationData.page - 1) +
+                        {paginationData?.pageSize * (paginationData?.page) +
                           1}{" "}
                         to{" "}
-                        {paginationData.pageSize * (paginationData.page - 1) +
+                        {paginationData?.pageSize * (paginationData?.page) +
                           campaigns.length}{" "}
-                        of <b>{paginationData.total} results</b>
+                        of <b>{paginationData?.total} results</b>
                       </span>
                     </p>
                     <div className="-mt-px w-0 flex-1 flex justify-end">
@@ -224,12 +224,12 @@ function Example({ role, siteData }) {
                         onClick={nextPage}
                         className={classNames(
                           "ml-3 relative inline-flex items-center pr-3 rounded-full py-2 border border-gray-300 text-sm font-medium text-gray-700  bg-white hover:bg-gray-50",
-                          paginationData.page < paginationData.pageCount
+                          paginationData?.page + 1 < paginationData?.pageCount
                             ? "opacity-100"
                             : "opacity-30"
                         )}
                         disabled={
-                          paginationData.page == paginationData.pageCount
+                          paginationData?.page + 1 == paginationData?.pageCount
                         }
                       >
                         <ArrowNarrowRightIcon
