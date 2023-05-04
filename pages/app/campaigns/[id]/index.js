@@ -367,7 +367,7 @@ function Example({ initialCampaign, role }) {
   const handleWritingFlow = (article) => {
     const data = { is_writing: true };
     const articleId = article.id;
-    API.articles.update(articleId, session, data).then(function (result) {
+    API.articles.update(articleId, data).then(function (result) {
       return API.campaigns
         .findOne(campaign?.id, session)
         .then(function (result) {
@@ -682,23 +682,7 @@ function Example({ initialCampaign, role }) {
                       />
                     ))
                   ) : (
-                    <div className="flex items-start justify-center bg-gray-50 border border-gray-200 rounded-lg p-4">
-                      <div className="flex-shrink-0">
-                        <ClockIcon
-                          className="h-6 w-6 text-gray-400"
-                          aria-hidden="true"
-                        />
-                      </div>
-                      <div className="ml-3">
-                        <p className="text-gray-600 font-bold">
-                          Your articles are in progress
-                        </p>
-                        <p>
-                          You’ll get notified when the drafts are ready for
-                          review.
-                        </p>
-                      </div>
-                    </div>
+                    <AddArticlesOptions />
                   )}
                 </div>
               </div>
@@ -820,7 +804,7 @@ export const getServerSideProps = async (context) => {
         destination: `/login?return_url=/app/campaigns/${id}`,
         permanent: false,
       },
-    }
+    };
   }
   if (
     session.role !== "Manager" &&

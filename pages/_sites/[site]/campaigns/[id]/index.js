@@ -428,15 +428,13 @@ function MyCampaigns({ initialCampaign, role, siteData }) {
 
   const handleApproveFlow = (article) => {
     setIsViewingArticle(false);
-    if (!campaign.hasEnoughImages) {
-      alert(
-        "Please upload an image for each article if you would like to approve this draft for publishing"
-      );
+    if (article.images?.length > 0) {
+      setSelectedArticle(article);
+      openApproval();
+    } else {
+      alert("You must upload an image to continue.");
       return;
     }
-
-    setSelectedArticle(article);
-    openApproval();
   };
 
   const handlePhotoFlow = (article) => {

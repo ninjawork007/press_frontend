@@ -31,6 +31,23 @@ const IndexPage = ({ site, role }) => {
   const [reviewingOrders, setReviewingOrders] = useState([]);
   const [publishingOrders, setPublishingOrders] = useState([]);
   const [completedOrders, setCompletedOrders] = useState([]);
+  const [statsCount, setStatsCount] = useState({
+    "pending_count": 0,
+    "reviewing_count": 0,
+    "requires_action_count": 0,
+    "completed_count": 0,
+    "publishing_count": 0,
+    "drafting_count": 0
+  })
+
+  const fetchStatsData = async () => {
+    try {
+      const res = await API.campaigns.getStats();
+      setStatsCount(res.data)
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   const isManager = role === "Manager";
   useEffect(() => {
@@ -40,6 +57,7 @@ const IndexPage = ({ site, role }) => {
         fetchAbandonedCarts();
       }
     }
+    if (session) fetchStatsData()
   }, [session]);
 
   // useEffect(() => {
@@ -114,6 +132,32 @@ const IndexPage = ({ site, role }) => {
       });
   };
 
+  const CAMPAIGN_STATS = [
+    {
+      title: 'Drafting',
+      value: statsCount.drafting_count
+    },
+    {
+      title: 'In review',
+      value: statsCount.reviewing_count
+    },
+    {
+      title: 'Overdue',
+      value: statsCount.pending_count
+    },
+    {
+      title: 'Rejected by publisher',
+      value: statsCount.requires_action_count
+    },
+    {
+      title: 'Publishing',
+      value: statsCount.publishing_count
+    },
+    {
+      title: 'Completed',
+      value: statsCount.completed_count
+    }
+  ]
   return (
     <div className="bg-[#F8F7FC]">
       <Navbar name="Press Backend" isManager={true} />
@@ -127,6 +171,17 @@ const IndexPage = ({ site, role }) => {
               <p id="welcome" className="text-lg text-gray-600 mt-4">
                 Welcome {session?.profile?.name}!
               </p>
+              <div className="grid grid-cols-2 gap-10 my-5">
+                {CAMPAIGN_STATS.map(data => <div key={data.title} className="bg-white rounded-xl">
+                  <div className="flex flex-col gap-4 p-8">
+                    <h4 className="font-bold text-gray-800">
+                      {data.title}
+                    </h4>
+                    <div>{data.value}</div>
+                  </div>
+                </div>)}
+              </div>
+
               {/* {session ? (
                 <div></div>
               ) : (

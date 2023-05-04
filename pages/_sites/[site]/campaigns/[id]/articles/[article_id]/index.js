@@ -203,7 +203,14 @@ function Article({ initialCampaign, article, role, siteData }) {
                   <button
                     className="relative whitespace-nowrap inline-flex items-center justify-center text-indigo-600 hover:text-indigo-800 font-bold gap-1"
                     id={selectedArticle.id}
-                    onClick={() => setIsApproving(true)}
+                    onClick={() => {
+                      if (article.images?.length > 0) {
+                        setIsApproving(true);
+                      } else {
+                        alert("You must upload an image to continue.");
+                        return;
+                      }
+                    }}
                   >
                     <CheckCircleIcon className="h-6 w-6" aria-hidden="true" />
                     {isManager ? "Sent to publishing" : "Publish"}

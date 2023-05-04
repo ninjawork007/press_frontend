@@ -84,7 +84,7 @@ export default function ArticleCard({
             Upload Google Doc
           </button>
         )}
-        {isManager && !article.isWriting && !draft && (
+        {isManager && !article.isWriting && !draft && !article.googleDocUrl && (
           <button
             className="relative whitespace-nowrap inline-flex items-center justify-center text-indigo-600 hover:text-indigo-800 font-bold gap-1"
             id={article.id}
@@ -95,7 +95,7 @@ export default function ArticleCard({
           </button>
         )}
 
-        {article.isWriting && (
+        {article.isWriting && !draft && !article.googleDocUrl && (
           <p className="text-indigo-600 hover:text-indigo-800 font-bold italic">
             Writing in Progress
           </p>
