@@ -106,7 +106,7 @@ function Example({ role, site }) {
   }, [])
   useEffect(() => {
     if (session) {
-      pageNumberRef.current = JSON.parse(localStorage.getItem('pageNumberRef')) || 1
+      pageNumberRef.current = JSON.parse(localStorage.getItem('returnToPage')) || 1
       setPurchasedPublications([]);
       fetchPurchasedPublications();
     }
@@ -141,13 +141,13 @@ function Example({ role, site }) {
 
   const nextPage = () => {
     pageNumberRef.current += 1;
-    localStorage.setItem('pageNumberRef', JSON.stringify(pageNumberRef.current))
+    localStorage.setItem('returnToPage', JSON.stringify(pageNumberRef.current))
     fetchPurchasedPublications();
   };
 
   const prevPage = () => {
     pageNumberRef.current -= 1;
-    localStorage.setItem('pageNumberRef', JSON.stringify(pageNumberRef.current))
+    localStorage.setItem('returnToPage', JSON.stringify(pageNumberRef.current))
     fetchPurchasedPublications();
   };
 
@@ -253,7 +253,7 @@ function Example({ role, site }) {
   };
   const handleTabClick = (tab) => {
     setSelectedTab(tab)
-    localStorage.removeItem('pageNumberRef')
+    localStorage.removeItem('returnToPage')
   }
   return (
     <>
