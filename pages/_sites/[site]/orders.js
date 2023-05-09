@@ -28,7 +28,7 @@ function SiteOrders({ role, siteData }) {
   const [paginationData, setPaginationData] = useState({});
   const [isLoading, setIsLoading] = useState(false);
 
-  const pageNumberRef = useRef(1);
+  const pageNumberRef = useRef(0);
   const [isUserDetailSlideoverOpen, setIsUserDetailSlideoverOpen] =
     useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
@@ -59,7 +59,7 @@ function SiteOrders({ role, siteData }) {
 
   useEffect(() => {
     if (session) {
-      pageNumberRef.current = JSON.parse(localStorage.getItem('returnToPage')) || 1
+      pageNumberRef.current = JSON.parse(localStorage.getItem('returnToPage')) || 0
       setPurchasedPublications([]);
       fetchPurchasedPublications();
     }
@@ -158,9 +158,9 @@ function SiteOrders({ role, siteData }) {
                         onClick={prevPage}
                         className={classNames(
                           "relative inline-flex items-center pl-3 rounded-full py-2 border border-gray-300 text-sm font-medium text-gray-700 hover:bg-gray-50",
-                          paginationData.page > 1 ? "opacity-100" : "opacity-30"
+                          paginationData?.page > 0 ? "opacity-100" : "opacity-30"
                         )}
-                        disabled={paginationData.page <= 1}
+                        disabled={paginationData?.page <= 0}
                       >
                         <ArrowNarrowLeftIcon
                           className="mr-3 h-5 w-5 text-gray-400"
@@ -170,12 +170,12 @@ function SiteOrders({ role, siteData }) {
                     </div>{" "}
                     <p className="text-sm text-center text-gray-700">
                       <span className="font-medium">
-                        {paginationData.pageSize * (paginationData.page - 1) +
+                        {paginationData?.pageSize * (paginationData?.page) +
                           1}{" "}
                         to{" "}
-                        {paginationData.pageSize * (paginationData.page - 1) +
+                        {paginationData?.pageSize * (paginationData?.page) +
                           purchasedPublications.length}{" "}
-                        of <b>{paginationData.total} results</b>
+                        of <b>{paginationData?.total} results</b>
                       </span>
                     </p>
                     <div className="-mt-px w-0 flex-1 flex justify-end">
@@ -183,12 +183,12 @@ function SiteOrders({ role, siteData }) {
                         onClick={nextPage}
                         className={classNames(
                           "ml-3 relative inline-flex items-center pr-3 rounded-full py-2 border border-gray-300 text-sm font-medium text-gray-700  bg-white hover:bg-gray-50",
-                          paginationData.page < paginationData.pageCount
+                          paginationData?.page + 1 < paginationData?.pageCount
                             ? "opacity-100"
                             : "opacity-30"
                         )}
                         disabled={
-                          paginationData.page == paginationData.pageCount
+                          paginationData?.page + 1 == paginationData?.pageCount
                         }
                       >
                         <ArrowNarrowRightIcon
